@@ -1,0 +1,72 @@
+{
+  "storeName": "青柚研究所",
+  "industry": "美妆个护",
+  "timezone": "Asia/Shanghai",
+  "currency": "CNY",
+  "latestCompleteDate": "2026-08-29",
+  "dateRange": {
+    "from": "2026-07-31",
+    "to": "2026-08-29",
+    "days": 30
+  },
+  "baselinePeriod": {
+    "from": "2026-08-16",
+    "to": "2026-08-22"
+  },
+  "currentPeriod": {
+    "from": "2026-08-23",
+    "to": "2026-08-29"
+  },
+  "skuCount": 12,
+  "rowsPerScenario": 360,
+  "dataNotice": "合成经营数据，仅用于产品演示，不代表真实商家或平台经营结果。",
+  "structureReference": "UCI Online Retail 交易字段结构参考；曝光、点击、库存、履约和退款为合成字段。",
+  "scenarios": [
+    {
+      "id": "conversion_drop",
+      "file": "qingyou-conversion-drop-30d.csv",
+      "name": "转化下降场景",
+      "expectedFindings": [
+        "conversion_drop"
+      ],
+      "description": "最近7天点击后下单转化率较基线下降超过20%，两期点击量均满足最小样本。"
+    },
+    {
+      "id": "refund_spike",
+      "file": "qingyou-refund-spike-30d.csv",
+      "name": "退款异常场景",
+      "expectedFindings": [
+        "refund_spike"
+      ],
+      "description": "最近7天订单退款率较基线增加至少3个百分点，异常分散在多个SKU。"
+    },
+    {
+      "id": "fulfillment_delay",
+      "file": "qingyou-fulfillment-delay-30d.csv",
+      "name": "履约异常场景",
+      "expectedFindings": [
+        "fulfillment_delay"
+      ],
+      "description": "最近7天全店48小时发货达成率低于90%，且已发货订单满足最小样本。"
+    },
+    {
+      "id": "inventory_shortage",
+      "file": "qingyou-inventory-shortage-30d.csv",
+      "name": "库存不足场景",
+      "expectedFindings": [
+        "inventory_shortage"
+      ],
+      "description": "防晒SKU期末库存不足近7天平均销量的7天覆盖量。"
+    },
+    {
+      "id": "sku_concentration",
+      "file": "qingyou-sku-concentration-30d.csv",
+      "name": "单SKU异常集中场景（默认旗舰）",
+      "expectedFindings": [
+        "refund_spike",
+        "sku_concentration"
+      ],
+      "description": "洁面SKU贡献超过40%的超额退款，并伴随该SKU发货变慢；仅作为待验证关联。"
+    }
+  ]
+}

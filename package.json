@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "data:generate": "node scripts/generate-sample-data.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"

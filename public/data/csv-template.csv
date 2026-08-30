@@ -1,0 +1,2 @@
+date,sku_id,sku_name,impressions,clicks,orders,units_sold,gmv,refund_orders,refund_amount,stock,shipped_orders,shipped_within_48h_orders,avg_ship_hours
+2026-08-29,YOUR-SKU-001,示例商品（上传前请替换或删除本行）,1000,120,15,17,1188,1,69,200,14,13,22.5
