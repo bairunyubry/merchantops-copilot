@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1060" viewBox="0 0 1600 1060">
+  <defs>
+    <style>
+      text { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; fill: #172033; }
+      .title { font-size: 30px; font-weight: 700; }
+      .subtitle { font-size: 15px; fill: #657087; }
+      .section { font-size: 19px; font-weight: 700; }
+      .label { font-size: 15px; font-weight: 600; }
+      .small { font-size: 13px; fill: #657087; }
+      .card { fill: #ffffff; stroke: #b9c2d3; stroke-width: 2; rx: 12; }
+      .primary { fill: #eef4ff; stroke: #4f7cff; stroke-width: 2; rx: 12; }
+      .risk { fill: #fff2f2; stroke: #db5b5b; stroke-width: 2; rx: 12; }
+      .ai { fill: #f4f0ff; stroke: #8069db; stroke-width: 2; rx: 12; }
+      .muted { fill: #f7f8fa; stroke: #d5dae4; stroke-width: 2; rx: 12; }
+      .arrow { stroke: #8c96aa; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .flow { stroke: #4f7cff; stroke-width: 3; fill: none; marker-end: url(#arrowBlue); }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#8c96aa"/></marker>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#4f7cff"/></marker>
+  </defs>
+  <rect width="1600" height="1060" fill="#f5f7fb"/>
+  <text x="64" y="62" class="title">经营总览页｜信息架构 v0.2（评审后）</text>
+  <text x="64" y="91" class="subtitle">设计目标：让新手商家在 3 次点击内完成“看到异常 → 理解证据 → 进入诊断 / 询问 AI”</text>
+
+  <rect x="64" y="125" width="1472" height="82" class="primary"/>
+  <text x="88" y="157" class="section">全局状态与数据控制</text>
+  <text x="88" y="184" class="small">店铺与统计截止日｜数据来源标识｜演示场景切换｜CSV 导入｜数据质量｜下载模板｜一键重置</text>
+
+  <text x="64" y="254" class="section">页面模块层级</text>
+  <rect x="64" y="278" width="240" height="350" class="muted"/>
+  <text x="88" y="314" class="section">导航层</text>
+  <text x="88" y="354" class="label">经营总览（当前）</text>
+  <text x="88" y="392" class="label">异常诊断</text>
+  <text x="88" y="430" class="label">行动工单中心</text>
+  <text x="88" y="468" class="label">周度复盘</text>
+  <text x="88" y="506" class="small">待执行 → 进行中 → 待复盘</text>
+  <line x1="88" y1="536" x2="280" y2="536" stroke="#d5dae4"/>
+  <text x="88" y="569" class="small">首版只有“经营总览”完整实现；</text>
+  <text x="88" y="593" class="small">其余作为闭环入口逐步补全。</text>
+
+  <rect x="340" y="278" width="790" height="350" class="card"/>
+  <text x="364" y="314" class="section">经营事实层（前端确定性聚合）</text>
+  <rect x="364" y="337" width="742" height="72" class="primary"/>
+  <text x="386" y="368" class="label">① 核心指标</text>
+  <text x="386" y="392" class="small">GMV｜净收入｜支付订单行｜转化率｜退款率｜48h 发货达成率；均展示当前值、环比、口径</text>
+  <rect x="364" y="425" width="356" height="82" class="card"/>
+  <text x="386" y="456" class="label">② 趋势与贡献</text>
+  <text x="386" y="481" class="small">30 日趋势、前后 7 日对比、SKU 贡献排行</text>
+  <rect x="750" y="425" width="356" height="82" class="card"/>
+  <text x="772" y="456" class="label">③ 经营健康</text>
+  <text x="772" y="481" class="small">商品 / 库存 / 履约 / 售后四维状态</text>
+  <rect x="364" y="523" width="742" height="80" class="risk"/>
+  <text x="386" y="554" class="label">④ 本周最需要处理的问题（核心决策入口）</text>
+  <text x="386" y="579" class="small">异常结论｜当前值 vs 基线｜关联 SKU｜证据｜严重度｜置信度｜待验证原因</text>
+
+  <rect x="1166" y="278" width="370" height="350" class="ai"/>
+  <text x="1190" y="314" class="section">AI 解释层（默认收起）</text>
+  <text x="1190" y="353" class="label">推荐问题</text>
+  <text x="1190" y="380" class="small">· 今天有什么经营问题？</text>
+  <text x="1190" y="405" class="small">· GMV 为什么下降？</text>
+  <text x="1190" y="430" class="small">· 我应该先处理什么？</text>
+  <text x="1190" y="474" class="label">回答结构</text>
+  <text x="1190" y="501" class="small">结论 → 数据证据 → 建议 → 验证方法</text>
+  <text x="1190" y="526" class="small">同时展示数据截止日与不确定性</text>
+  <text x="1190" y="558" class="small">建议可一键采纳为行动工单</text>
+  <text x="1190" y="585" class="label">边界</text>
+  <text x="1190" y="610" class="small">只读取聚合结果；失败时返回规则建议</text>
+
+  <path d="M304 454 H340" class="arrow"/>
+  <path d="M1130 454 H1166" class="arrow"/>
+
+  <text x="64" y="688" class="section">核心用户路径</text>
+  <rect x="64" y="718" width="210" height="92" class="card"/>
+  <text x="89" y="754" class="label">1. 获得可用数据</text>
+  <text x="89" y="781" class="small">默认示例 / 切换场景 / 上传 CSV</text>
+  <rect x="318" y="718" width="210" height="92" class="primary"/>
+  <text x="343" y="754" class="label">2. 发现指标异常</text>
+  <text x="343" y="781" class="small">KPI 环比 + 风险标记</text>
+  <rect x="572" y="718" width="210" height="92" class="risk"/>
+  <text x="597" y="754" class="label">3. 理解问题证据</text>
+  <text x="597" y="781" class="small">异常卡片 + SKU 贡献</text>
+  <rect x="826" y="718" width="210" height="92" class="ai"/>
+  <text x="851" y="754" class="label">4. 获取解释与建议</text>
+  <text x="851" y="781" class="small">追问 AI / 查看诊断</text>
+  <rect x="1080" y="718" width="210" height="92" class="card"/>
+  <text x="1105" y="754" class="label">5. 创建行动工单</text>
+  <text x="1105" y="781" class="small">采纳建议 / 自定义行动</text>
+  <rect x="1334" y="718" width="202" height="92" class="card"/>
+  <text x="1359" y="754" class="label">6. 7 天后复盘</text>
+  <text x="1359" y="781" class="small">已解决 / 继续处理</text>
+  <path d="M274 764 H318" class="flow"/>
+  <path d="M528 764 H572" class="flow"/>
+  <path d="M782 764 H826" class="flow"/>
+  <path d="M1036 764 H1080" class="flow"/>
+  <path d="M1290 764 H1334" class="flow"/>
+
+  <rect x="64" y="862" width="1472" height="130" class="muted"/>
+  <text x="88" y="898" class="section">贯穿所有模块的状态与规则</text>
+  <text x="88" y="932" class="label">状态：</text>
+  <text x="148" y="932" class="small">加载、空数据、字段缺失、部分脏数据、数据不足、AI 生成中、AI 错误、规则降级</text>
+  <text x="88" y="965" class="label">表达：</text>
+  <text x="148" y="965" class="small">红色只表示风险，绿色只表示改善；所有指标有单位 / 周期 / 来源；相关性不得写成确定因果</text>
+  <text x="960" y="932" class="small">工单：待执行 → 进行中 → 待复盘 → 已解决 / 未解决</text>
+</svg>

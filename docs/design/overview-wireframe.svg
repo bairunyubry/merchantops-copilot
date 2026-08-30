@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1520" viewBox="0 0 1440 1520">
+  <defs>
+    <style>
+      text { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; fill: #202735; }
+      .h1 { font-size: 24px; font-weight: 700; }
+      .h2 { font-size: 16px; font-weight: 700; }
+      .body { font-size: 13px; }
+      .small { font-size: 11px; fill: #737d90; }
+      .tiny { font-size: 10px; fill: #8992a3; }
+      .box { fill: #fff; stroke: #b9c1cf; stroke-width: 1.5; rx: 8; }
+      .soft { fill: #f6f7f9; stroke: #d7dce5; stroke-width: 1.5; rx: 8; }
+      .active { fill: #eef3ff; stroke: #809bea; stroke-width: 1.5; rx: 8; }
+      .risk { fill: #fff7f7; stroke: #d98787; stroke-width: 1.5; rx: 8; }
+      .ai { fill: #faf8ff; stroke: #a79add; stroke-width: 1.5; rx: 8; }
+      .line { stroke: #99a3b4; stroke-width: 1.5; fill: none; }
+      .dash { stroke: #a6afbe; stroke-width: 1.5; stroke-dasharray: 5 5; fill: none; }
+      .note { font-size: 11px; fill: #4f70d8; }
+    </style>
+  </defs>
+  <rect width="1440" height="1520" fill="#eef1f5"/>
+
+  <rect x="0" y="0" width="166" height="1520" fill="#1f2735"/>
+  <text x="22" y="38" fill="#fff" style="font-family:Microsoft YaHei;font-size:15px;font-weight:700">商家经营罗盘</text>
+  <text x="22" y="60" fill="#9da9bb" style="font-family:Microsoft YaHei;font-size:10px">MerchantOps Copilot</text>
+  <rect x="14" y="92" width="138" height="42" fill="#33405a" rx="7"/>
+  <text x="38" y="118" fill="#fff" style="font-family:Microsoft YaHei;font-size:13px">▦ 经营总览</text>
+  <text x="38" y="166" fill="#bac3d0" style="font-family:Microsoft YaHei;font-size:13px">△ 异常诊断</text>
+  <text x="38" y="210" fill="#bac3d0" style="font-family:Microsoft YaHei;font-size:13px">✓ 行动工单</text>
+  <text x="38" y="254" fill="#bac3d0" style="font-family:Microsoft YaHei;font-size:13px">▤ 周度复盘</text>
+  <line x1="20" y1="286" x2="146" y2="286" stroke="#445066"/>
+  <text x="22" y="316" fill="#7f8b9e" style="font-family:Microsoft YaHei;font-size:10px">数据仅存于当前浏览器</text>
+
+  <rect x="166" y="0" width="1274" height="78" fill="#fff"/>
+  <text x="194" y="34" class="h1">经营总览</text>
+  <text x="194" y="56" class="small">青柚研究所 · 美妆个护 · 数据截止 2026-08-29</text>
+  <rect x="905" y="19" width="142" height="38" class="soft"/>
+  <text x="922" y="43" class="body">场景：旗舰异常⌄</text>
+  <rect x="1057" y="19" width="96" height="38" class="box"/>
+  <text x="1077" y="43" class="body">⇩ 下载模板</text>
+  <rect x="1163" y="19" width="90" height="38" class="active"/>
+  <text x="1183" y="43" class="body">⇧ 导入 CSV</text>
+  <rect x="1263" y="19" width="76" height="38" class="box"/>
+  <text x="1282" y="43" class="body">↻ 重置</text>
+  <rect x="1351" y="19" width="58" height="38" class="ai"/>
+  <text x="1367" y="43" class="body">AI ✦</text>
+
+  <g transform="translate(190,100)">
+    <rect x="0" y="0" width="1226" height="52" class="soft"/>
+    <circle cx="22" cy="26" r="7" fill="#758298"/>
+    <text x="39" y="22" class="body">当前使用演示合成数据</text>
+    <text x="39" y="39" class="tiny">30 天 · 360 行 · 12 个 SKU · 无真实平台 API / 个人信息</text>
+    <text x="1063" y="22" class="small">数据质量：通过</text>
+    <text x="1063" y="39" class="note">查看校验报告 ›</text>
+
+    <text x="0" y="91" class="h2">核心经营指标</text>
+    <text x="1029" y="91" class="small">本期 08/23–08/29 · 对比前 7 日</text>
+
+    <g transform="translate(0,108)">
+      <rect x="0" y="0" width="191" height="100" class="box"/>
+      <text x="16" y="25" class="small">GMV  ⓘ</text><text x="16" y="58" style="font-size:22px;font-weight:700">¥42,680</text><text x="128" y="58" class="small">-8.4%</text><text x="16" y="82" class="tiny">支付口径 · 当前 7 日</text>
+      <rect x="207" y="0" width="191" height="100" class="box"/>
+      <text x="223" y="25" class="small">净收入  ⓘ</text><text x="223" y="58" style="font-size:22px;font-weight:700">¥39,956</text><text x="335" y="58" class="small">-11.2%</text><text x="223" y="82" class="tiny">GMV − 退款金额</text>
+      <rect x="414" y="0" width="191" height="100" class="box"/>
+      <text x="430" y="25" class="small">支付订单行  ⓘ</text><text x="430" y="58" style="font-size:22px;font-weight:700">1,284</text><text x="548" y="58" class="small">-2.1%</text><text x="430" y="82" class="tiny">SKU 支付订单行数</text>
+      <rect x="621" y="0" width="191" height="100" class="box"/>
+      <text x="637" y="25" class="small">点击—支付转化率  ⓘ</text><text x="637" y="58" style="font-size:22px;font-weight:700">8.12%</text><text x="750" y="58" class="small">-3.6%</text><text x="637" y="82" class="tiny">订单行 / 点击数</text>
+      <rect x="828" y="0" width="191" height="100" class="risk"/>
+      <text x="844" y="25" class="small">退款率  ⓘ  [风险]</text><text x="844" y="58" style="font-size:22px;font-weight:700">6.38%</text><text x="952" y="58" fill="#b64d4d" style="font-size:11px">+3.23pp</text><text x="844" y="82" class="tiny">退款订单 / 支付订单行</text>
+      <rect x="1035" y="0" width="191" height="100" class="box"/>
+      <text x="1051" y="25" class="small">48h 发货达成率  ⓘ</text><text x="1051" y="58" style="font-size:22px;font-weight:700">94.23%</text><text x="1164" y="58" class="small">-1.1%</text><text x="1051" y="82" class="tiny">48h 内发货 / 已发货</text>
+    </g>
+
+    <text x="0" y="250" class="h2">本周最需要处理的问题</text>
+    <rect x="0" y="267" width="1226" height="150" class="risk"/>
+    <rect x="18" y="286" width="44" height="23" fill="#f5dede" rx="5"/>
+    <text x="28" y="302" style="font-size:11px;fill:#a84949">高风险</text>
+    <text x="76" y="304" style="font-size:16px;font-weight:700">洁面 SKU 退款异常贡献了全店退款增量的 76%</text>
+    <text x="18" y="338" class="body">当前退款率 6.38%，较前 7 日上升 3.23 个百分点；主要关联 QY-CLEAN-001。</text>
+    <rect x="18" y="355" width="780" height="45" class="soft"/>
+    <text x="31" y="374" class="small">证据：该 SKU 退款订单 42 单｜平均发货 51.6h｜“破损 / 不符预期”原因集中</text>
+    <text x="31" y="391" class="tiny">待验证：发货延迟与退款上升存在相关性，尚不能判断为确定因果。</text>
+    <text x="827" y="372" class="small">置信度 86%</text>
+    <rect x="936" y="354" width="116" height="34" class="box"/><text x="957" y="376" class="body">查看完整诊断</text>
+    <rect x="1064" y="354" width="144" height="34" class="active"/><text x="1083" y="376" class="body">让 AI 解释这个问题</text>
+
+    <text x="0" y="458" class="h2">近 30 天经营趋势</text>
+    <rect x="0" y="475" width="1226" height="306" class="box"/>
+    <text x="18" y="505" class="small">指标：[ 净收入⌄ ]   单位：元   粒度：日</text>
+    <text x="1060" y="505" class="tiny">来源：当前导入数据</text>
+    <line x1="55" y1="720" x2="1182" y2="720" class="line"/>
+    <line x1="55" y1="538" x2="55" y2="720" class="line"/>
+    <path d="M55 651 L101 626 L147 638 L193 586 L239 604 L285 568 L331 591 L377 550 L423 573 L469 530 L515 553 L561 560 L607 549 L653 573 L699 562 L745 594 L791 580 L837 615 L883 625 L929 612 L975 658 L1021 646 L1067 676 L1113 665 L1182 687" stroke="#7184bd" stroke-width="3" fill="none"/>
+    <line x1="929" y1="528" x2="929" y2="720" class="dash"/>
+    <text x="941" y="545" class="tiny">本期开始</text>
+    <text x="55" y="749" class="tiny">07/31</text><text x="590" y="749" class="tiny">08/15</text><text x="1147" y="749" class="tiny">08/29</text>
+
+    <text x="0" y="823" class="h2">问题定位</text>
+    <rect x="0" y="840" width="600" height="300" class="box"/>
+    <text x="18" y="871" class="h2">SKU 异常贡献排行</text>
+    <text x="18" y="893" class="tiny">按退款增量贡献排序</text>
+    <text x="18" y="936" class="body">1  氨基酸净润洁面慕斯</text><rect x="240" y="922" width="285" height="18" fill="#e6e9ef" rx="4"/><rect x="240" y="922" width="217" height="18" fill="#aab4c7" rx="4"/><text x="542" y="936" class="small">76%</text>
+    <text x="18" y="984" class="body">2  舒缓修护面膜</text><rect x="240" y="970" width="285" height="18" fill="#e6e9ef" rx="4"/><rect x="240" y="970" width="63" height="18" fill="#c6cdd9" rx="4"/><text x="542" y="984" class="small">22%</text>
+    <text x="18" y="1032" class="body">3  轻盈防晒乳</text><rect x="240" y="1018" width="285" height="18" fill="#e6e9ef" rx="4"/><rect x="240" y="1018" width="14" height="18" fill="#d3d8e0" rx="4"/><text x="542" y="1032" class="small">5%</text>
+    <line x1="18" y1="1072" x2="582" y2="1072" stroke="#e1e4ea"/>
+    <text x="18" y="1105" class="note">查看全部 SKU 明细 ›</text>
+
+    <rect x="626" y="840" width="600" height="300" class="box"/>
+    <text x="644" y="871" class="h2">经营健康</text>
+    <text x="644" y="893" class="tiny">按商品、库存、履约、售后四维诊断</text>
+    <text x="644" y="936" class="body">商品</text><rect x="720" y="922" width="400" height="14" fill="#e6e9ef" rx="7"/><rect x="720" y="922" width="308" height="14" fill="#9daac1" rx="7"/><text x="1147" y="935" class="small">良好</text>
+    <text x="644" y="984" class="body">库存</text><rect x="720" y="970" width="400" height="14" fill="#e6e9ef" rx="7"/><rect x="720" y="970" width="344" height="14" fill="#9daac1" rx="7"/><text x="1147" y="983" class="small">良好</text>
+    <text x="644" y="1032" class="body">履约</text><rect x="720" y="1018" width="400" height="14" fill="#e6e9ef" rx="7"/><rect x="720" y="1018" width="282" height="14" fill="#adb7c9" rx="7"/><text x="1147" y="1031" class="small">关注</text>
+    <text x="644" y="1080" class="body">售后</text><rect x="720" y="1066" width="400" height="14" fill="#e6e9ef" rx="7"/><rect x="720" y="1066" width="135" height="14" fill="#c98f8f" rx="7"/><text x="1147" y="1079" style="font-size:11px;fill:#ad5353">风险</text>
+    <text x="644" y="1110" class="note">查看健康口径 ›</text>
+
+    <rect x="0" y="1172" width="1226" height="66" class="soft"/>
+    <text x="18" y="1198" class="small">数据说明：当前展示为公开交易数据结构参考 + 合成经营漏斗数据，仅用于产品演示。</text>
+    <text x="18" y="1220" class="tiny">系统不会声称接入任何社交或购物平台官方数据；上传文件仅在浏览器本地解析。</text>
+  </g>
+
+  <text x="190" y="1438" class="note">v0.2 首屏目标：不滚动即可看见数据状态、6 个核心指标、最高优先级异常与 AI 入口。</text>
+  <text x="190" y="1462" class="small">“策略模拟”已移除；异常建议可在 AI / 诊断页中采纳为行动工单，7 天后进入数据复盘。</text>
+  <text x="190" y="1486" class="tiny">低保真数值仅用于表达信息层级；正式页面将接入前端聚合，并补齐加载、空、错误和规则降级状态。</text>
+</svg>
