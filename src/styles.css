@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+:root {
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #14211f;
+  background: #f2f7f6;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+.shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+}
+
+.card {
+  width: min(680px, 100%);
+  padding: 48px;
+  border: 1px solid #dce9e6;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 20px 60px rgb(15 118 110 / 10%);
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: #0f766e;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(36px, 7vw, 64px);
+  line-height: 1.08;
+}
+
+.promise {
+  margin: 20px 0 28px;
+  color: #51635f;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.status {
+  display: inline-flex;
+  padding: 8px 14px;
+  border-radius: 999px;
+  color: #0f766e;
+  background: #e6f5f2;
+  font-weight: 700;
+}
+
+ul {
+  display: grid;
+  gap: 10px;
+  margin: 28px 0;
+  padding-left: 20px;
+  color: #314642;
+}
+
+.next {
+  margin: 0;
+  padding-top: 20px;
+  border-top: 1px solid #e7efed;
+  color: #667975;
+}
+
+@media (max-width: 520px) {
+  .shell {
+    padding: 16px;
+  }
+
+  .card {
+    padding: 28px;
+    border-radius: 18px;
+  }
+}
+
