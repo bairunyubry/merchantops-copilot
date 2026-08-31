@@ -54,6 +54,11 @@ function withoutAccessCode(request: AdviceRequest): Omit<AdviceRequest, 'accessC
   return safe
 }
 
+function modelInput(request: AdviceRequest) {
+  const { accessCode: _accessCode, history: _history, ...safe } = request
+  return safe
+}
+
 function sanitizeReferences(request: AdviceRequest, content: z.infer<typeof adviceContentSchema>) {
   const findingIds = new Set(request.context.findings.map((finding) => finding.id))
   const evidence = content.evidence.filter((item) => item.findingId === null || findingIds.has(item.findingId))
@@ -98,7 +103,8 @@ export async function generateAdvice(requestValue: unknown, options?: {
         model,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: JSON.stringify(withoutAccessCode(request)) },
+          ...(request.history ?? []).map((turn) => ({ role: turn.role, content: turn.content })),
+          { role: 'user', content: JSON.stringify(modelInput(request)) },
         ],
         response_format: { type: 'json_object' },
         thinking: { type: 'disabled' },

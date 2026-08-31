@@ -79,6 +79,10 @@ export const adviceRequestSchema = z.object({
   question: z.string().trim().min(1).max(300),
   surface: aiSurfaceSchema,
   selectedFindingId: z.string().max(100).nullable(),
+  history: z.array(z.object({
+    role: z.enum(['user', 'assistant']),
+    content: z.string().trim().min(1).max(1200),
+  })).max(8).optional(),
   context: aiContextSchema,
 })
 
@@ -266,4 +270,3 @@ export async function requestAdvice(request: AdviceRequest): Promise<AdviceRespo
   if (!response.ok) throw new Error(payload.error ?? `AI 服务请求失败（${response.status}）`)
   return adviceResponseSchema.parse(payload)
 }
-

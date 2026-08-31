@@ -205,6 +205,32 @@ function UsageGuideModal({ onClose }: { onClose: () => void }) {
   )
 }
 
+type AiChatMessage =
+  | { id: string; role: 'user'; text: string }
+  | { id: string; role: 'assistant'; response: AdviceResponse }
+
+function AdviceMessageCard({
+  answer,
+  findings,
+  onCreateAction,
+}: {
+  answer: AdviceResponse
+  findings: DiagnosisFinding[]
+  onCreateAction: (finding: DiagnosisFinding, action: AdviceResponse['priorityActions'][number]) => void
+}) {
+  const firstAction = answer.priorityActions[0]
+  const actionFinding = firstAction ? findings.find((item) => item.id === firstAction.findingId) : undefined
+  return <article className="answer-card">
+    <div className={`answer-mode mode-${answer.mode}`}>{answer.mode === 'ai' ? 'AI 解释' : '规则降级'}</div>
+    <section><h3>结论</h3><p>{answer.answer}</p></section>
+    <section><h3>数据证据</h3><ul>{answer.evidence.map((item, index) => <li key={`${item.findingId}-${index}`}>{item.text}</li>)}</ul></section>
+    {answer.hypotheses.length > 0 && <section><h3>待验证假设</h3>{answer.hypotheses.map((item, index) => <div className="hypothesis-item" key={`${item.statement}-${index}`}><p>{item.statement}</p><small>验证：{item.verification}</small></div>)}</section>}
+    {firstAction && <><section><h3>建议先做</h3><p>{firstAction.action}</p><small className="action-reason">依据：{firstAction.reason}</small></section><section><h3>验证方法</h3><p>{firstAction.verification}</p></section></>}
+    {answer.caveats.length > 0 && <div className="caveat"><Info size={15} /><span>{answer.caveats.join('；')}</span></div>}
+    {firstAction && actionFinding && <button className="button button-primary" type="button" onClick={() => onCreateAction(actionFinding, firstAction)}><ListTodo size={15} />采纳为行动工单</button>}
+  </article>
+}
+
 function AiDrawer({
   finding,
   findings,
@@ -224,42 +250,46 @@ function AiDrawer({
 }) {
   const presets = ['今天有什么经营问题？', 'GMV 为什么下降？', '我应该先处理什么？', '哪些 SKU 需要关注？']
   const [input, setInput] = useState('')
-  const [question, setQuestion] = useState(initialQuestion ?? '')
   const savedAccessCode = useRef(sessionStorage.getItem('merchantops.demo-access-code') ?? '')
   const [accessCode, setAccessCode] = useState(savedAccessCode.current)
-  const [answer, setAnswer] = useState<AdviceResponse | null>(() => initialQuestion ? buildRuleFallback({
-    question: initialQuestion,
-    surface,
-    selectedFindingId: finding.id === 'finding-none' ? null : finding.id,
-    context,
-  }, 'access_code_not_entered') : null)
+  const [messages, setMessages] = useState<AiChatMessage[]>([])
   const [asking, setAsking] = useState(false)
   const [requestError, setRequestError] = useState('')
   const initialRequestSent = useRef(false)
+  const conversationEndRef = useRef<HTMLDivElement>(null)
 
   const ask = async (value: string) => {
     const normalized = value.trim()
-    if (!normalized) return
-    setQuestion(normalized)
+    if (!normalized || asking) return
+    const history = messages.slice(-8).map((message) => message.role === 'user'
+      ? { role: 'user' as const, content: message.text }
+      : { role: 'assistant' as const, content: message.response.answer })
+    const userMessage: AiChatMessage = { id: `user-${Date.now()}-${messages.length}`, role: 'user', text: normalized }
+    setMessages((current) => [...current, userMessage].slice(-12))
     setInput('')
     setRequestError('')
     const safeRequest = {
       question: normalized,
       surface,
       selectedFindingId: finding.id === 'finding-none' ? null : finding.id,
+      history,
       context,
     }
     if (!accessCode.trim()) {
-      setAnswer(buildRuleFallback(safeRequest, 'access_code_not_entered'))
+      const fallback = buildRuleFallback(safeRequest, 'access_code_not_entered')
+      setMessages((current) => [...current, { id: `assistant-${Date.now()}`, role: 'assistant' as const, response: fallback }].slice(-12))
       setRequestError('输入演示口令后可调用 DeepSeek；当前展示规则建议。')
       return
     }
     sessionStorage.setItem('merchantops.demo-access-code', accessCode.trim())
     setAsking(true)
     try {
-      setAnswer(await requestAdvice({ ...safeRequest, accessCode: accessCode.trim() }))
+      const response = await requestAdvice({ ...safeRequest, accessCode: accessCode.trim() })
+      setMessages((current) => [...current, { id: `assistant-${Date.now()}`, role: 'assistant' as const, response }].slice(-12))
+      if (response.mode === 'rule_fallback') setRequestError('本次模型调用未返回可用结果，已保留对话并展示规则建议；你可以继续追问。')
     } catch (error) {
-      setAnswer(buildRuleFallback(safeRequest, 'client_request_error'))
+      const fallback = buildRuleFallback(safeRequest, 'client_request_error')
+      setMessages((current) => [...current, { id: `assistant-${Date.now()}`, role: 'assistant' as const, response: fallback }].slice(-12))
       setRequestError(error instanceof Error ? error.message : 'AI 服务暂时不可用，已切换规则建议。')
     } finally {
       setAsking(false)
@@ -272,13 +302,18 @@ function AiDrawer({
   }
 
   useEffect(() => {
-    if (initialRequestSent.current || !initialQuestion || !savedAccessCode.current.trim()) return
+    if (initialRequestSent.current || !initialQuestion) return
     initialRequestSent.current = true
     void ask(initialQuestion)
   }, [initialQuestion])
 
-  const firstAction = answer?.priorityActions[0]
-  const actionFinding = firstAction ? findings.find((item) => item.id === firstAction.findingId) : undefined
+  useEffect(() => {
+    conversationEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  }, [asking, messages])
+
+  const lastAssistant = [...messages].reverse().find((message) => message.role === 'assistant')
+  const lastAnswer = lastAssistant?.role === 'assistant' ? lastAssistant.response : null
+  const contextTurns = messages.filter((message) => message.role === 'assistant').length
 
   return (
     <>
@@ -287,32 +322,26 @@ function AiDrawer({
         <header className="ai-header">
           <div className="ai-title">
             <span className="ai-icon"><Sparkles size={18} /></span>
-            <div><strong>AI 经营助手</strong><span>{answer?.mode === 'ai' ? `DeepSeek · ${answer.meta.model}` : '规则建议模式 · AI 可降级'}</span></div>
+            <div><strong>AI 经营助手</strong><span>{asking ? 'DeepSeek · 正在分析' : lastAnswer?.mode === 'ai' ? `DeepSeek · ${lastAnswer.meta.model}` : lastAnswer ? '规则建议模式 · 可继续追问' : 'DeepSeek · 支持多轮上下文'}</span></div>
           </div>
           <button className="icon-button" type="button" onClick={onClose} aria-label="收起 AI 助手"><X size={18} /></button>
         </header>
         <div className="ai-body">
-          <div className="ai-privacy"><Database size={14} />只读取当前聚合结果，不读取订单明细或个人信息</div>
+          <div className="ai-privacy"><Database size={14} /><span>只读取当前聚合结果，不读取订单明细或个人信息</span><b>{contextTurns} 轮上下文</b></div>
           <label className="ai-access-code"><span>演示口令</span><input type="password" value={accessCode} onChange={(event) => setAccessCode(event.target.value)} placeholder="不输入仍可使用规则建议" autoComplete="off" /></label>
           {requestError && <div className="ai-request-error"><Info size={14} />{requestError}</div>}
           <section className="preset-section">
             <p>你可以这样问</p>
             <div className="preset-grid">{presets.map((preset) => <button type="button" key={preset} disabled={asking} onClick={() => void ask(preset)}>{preset}</button>)}</div>
           </section>
-          {question && <div className="user-bubble"><strong>{question}</strong><span>你的问题</span></div>}
-          {answer ? (
-            <article className="answer-card">
-              <div className={`answer-mode mode-${answer.mode}`}>{answer.mode === 'ai' ? 'AI 解释' : '规则降级'}</div>
-              <section><h3>结论</h3><p>{answer.answer}</p></section>
-              <section><h3>数据证据</h3><ul>{answer.evidence.map((item, index) => <li key={`${item.findingId}-${index}`}>{item.text}</li>)}</ul></section>
-              {answer.hypotheses.length > 0 && <section><h3>待验证假设</h3>{answer.hypotheses.map((item, index) => <div className="hypothesis-item" key={`${item.statement}-${index}`}><p>{item.statement}</p><small>验证：{item.verification}</small></div>)}</section>}
-              {firstAction && <><section><h3>建议先做</h3><p>{firstAction.action}</p><small className="action-reason">依据：{firstAction.reason}</small></section><section><h3>验证方法</h3><p>{firstAction.verification}</p></section></>}
-              {answer.caveats.length > 0 && <div className="caveat"><Info size={15} /><span>{answer.caveats.join('；')}</span></div>}
-              {firstAction && actionFinding && <button className="button button-primary" type="button" onClick={() => onCreateAction(actionFinding, firstAction)}><ListTodo size={15} />采纳为行动工单</button>}
-            </article>
-          ) : (
+          {messages.length === 0 && !asking ? (
             <div className="ai-empty"><Bot size={28} /><strong>从一个经营问题开始</strong><p>回答将引用当前看板证据，并说明验证方法和不确定性。</p></div>
-          )}
+          ) : <div className="ai-conversation">{messages.map((message) => message.role === 'user'
+            ? <div className="user-bubble" key={message.id}><strong>{message.text}</strong><span>你的问题</span></div>
+            : <AdviceMessageCard key={message.id} answer={message.response} findings={findings} onCreateAction={onCreateAction} />)}
+            {asking && <div className="assistant-loading"><LoaderCircle className="spin" size={16} /><span>正在结合当前经营事实生成回答…</span></div>}
+            <div ref={conversationEndRef} />
+          </div>}
         </div>
         <form className="ai-composer" onSubmit={submit}>
           <input value={input} onChange={(event) => setInput(event.target.value)} placeholder="输入经营问题…" aria-label="输入经营问题" disabled={asking} />
