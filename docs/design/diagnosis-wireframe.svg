@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1550" viewBox="0 0 1440 1550">
+  <defs>
+    <style>
+      text { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; fill: #202735; }
+      .h1 { font-size: 23px; font-weight: 700; }
+      .h2 { font-size: 16px; font-weight: 700; }
+      .h3 { font-size: 14px; font-weight: 700; }
+      .body { font-size: 12px; }
+      .small { font-size: 10px; fill: #737d90; }
+      .tiny { font-size: 9px; fill: #8992a3; }
+      .box { fill: #fff; stroke: #b9c1cf; stroke-width: 1.5; rx: 8; }
+      .soft { fill: #f6f7f9; stroke: #d7dce5; stroke-width: 1.5; rx: 8; }
+      .active { fill: #eef3ff; stroke: #809bea; stroke-width: 1.5; rx: 8; }
+      .risk { fill: #fff7f7; stroke: #d98787; stroke-width: 1.5; rx: 8; }
+      .ai { fill: #faf8ff; stroke: #a79add; stroke-width: 1.5; rx: 8; }
+      .line { stroke: #99a3b4; stroke-width: 1.5; fill: none; }
+      .dash { stroke: #a6afbe; stroke-width: 1.5; stroke-dasharray: 5 5; fill: none; }
+      .note { font-size: 10px; fill: #4f70d8; }
+    </style>
+  </defs>
+  <rect width="1440" height="1550" fill="#eef1f5"/>
+
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="176" height="1550" fill="#1f2735"/>
+  <text x="22" y="38" style="font-family:Microsoft YaHei;font-size:15px;font-weight:700;fill:#fff">商家经营罗盘</text>
+  <text x="22" y="60" style="font-family:Microsoft YaHei;font-size:10px;fill:#9da9bb">MerchantOps Copilot</text>
+  <text x="40" y="118" style="font-family:Microsoft YaHei;font-size:13px;fill:#bac3d0">▦ 经营总览</text>
+  <rect x="14" y="140" width="148" height="42" fill="#33405a" rx="7"/>
+  <text x="40" y="166" style="font-family:Microsoft YaHei;font-size:13px;fill:#fff">△ 异常诊断</text>
+  <text x="40" y="214" style="font-family:Microsoft YaHei;font-size:13px;fill:#bac3d0">✓ 行动工单</text>
+  <text x="40" y="258" style="font-family:Microsoft YaHei;font-size:13px;fill:#bac3d0">▤ 周度复盘</text>
+  <line x1="22" y1="290" x2="154" y2="290" stroke="#445066"/>
+  <text x="22" y="320" style="font-family:Microsoft YaHei;font-size:10px;fill:#7f8b9e">数据与经营总览保持一致</text>
+
+  <!-- Header -->
+  <rect x="176" y="0" width="1264" height="78" fill="#fff"/>
+  <text x="200" y="34" class="h1">异常诊断</text>
+  <text x="200" y="56" class="small">青柚研究所 · 美妆个护 · 数据截止 2026-08-29</text>
+  <rect x="1047" y="19" width="144" height="38" class="soft"/>
+  <text x="1065" y="43" class="body">场景：组合异常示例⌄</text>
+  <rect x="1203" y="19" width="102" height="38" class="box"/>
+  <text x="1222" y="43" class="body">← 返回总览</text>
+  <rect x="1317" y="19" width="92" height="38" class="ai"/>
+  <text x="1338" y="43" class="body">AI 助手 ✦</text>
+
+  <!-- Summary -->
+  <g transform="translate(200,100)">
+    <rect x="0" y="0" width="1216" height="78" class="soft"/>
+    <circle cx="26" cy="39" r="9" fill="#cf7d7d"/>
+    <text x="48" y="31" class="h2">本期共发现 3 项独立异常</text>
+    <text x="48" y="54" class="small">当前优先处理“洁面 SKU 退款异常”；规则命中已按业务问题合并，避免重复报警。</text>
+    <text x="995" y="31" class="small">本期 08/23–08/29</text>
+    <text x="995" y="54" class="note">查看诊断口径与排序规则 ›</text>
+  </g>
+
+  <!-- Left finding list -->
+  <g transform="translate(200,198)">
+    <rect x="0" y="0" width="304" height="1224" class="box"/>
+    <text x="18" y="33" class="h2">全部异常</text>
+    <text x="225" y="33" class="small">按优先级排序</text>
+    <line x1="18" y1="50" x2="286" y2="50" stroke="#e2e6ed"/>
+
+    <rect x="12" y="66" width="280" height="146" class="risk"/>
+    <rect x="26" y="82" width="32" height="22" fill="#f2d7d7" rx="4"/><text x="36" y="97" style="font-size:10px;fill:#a64a4a">#1</text>
+    <rect x="66" y="82" width="48" height="22" fill="#f7e2e2" rx="4"/><text x="77" y="97" style="font-size:10px;fill:#a64a4a">高风险</text>
+    <text x="26" y="128" class="h3">洁面 SKU 退款异常</text>
+    <text x="26" y="151" class="small">退款率 6.38% · +3.23pp</text>
+    <text x="26" y="174" class="tiny">关联 QY-CLEAN-001 · 贡献 76%</text>
+    <text x="234" y="197" style="font-size:18px;font-weight:700;fill:#a64a4a">89</text>
+
+    <rect x="12" y="224" width="280" height="130" class="box"/>
+    <rect x="26" y="240" width="32" height="22" fill="#e9edf4" rx="4"/><text x="36" y="255" class="small">#2</text>
+    <rect x="66" y="240" width="48" height="22" fill="#f5ead5" rx="4"/><text x="77" y="255" style="font-size:10px;fill:#92621b">需关注</text>
+    <text x="26" y="286" class="h3">全店履约达成率下降</text>
+    <text x="26" y="309" class="small">48h 发货率 87.4% · -7.1pp</text>
+    <text x="234" y="337" style="font-size:18px;font-weight:700;fill:#7b6a4b">78</text>
+
+    <rect x="12" y="366" width="280" height="130" class="box"/>
+    <rect x="26" y="382" width="32" height="22" fill="#e9edf4" rx="4"/><text x="36" y="397" class="small">#3</text>
+    <rect x="66" y="382" width="48" height="22" fill="#eef0f3" rx="4"/><text x="77" y="397" class="small">一般</text>
+    <text x="26" y="428" class="h3">防晒 SKU 库存不足</text>
+    <text x="26" y="451" class="small">预计覆盖 4.2 天 · 阈值 7 天</text>
+    <text x="234" y="479" style="font-size:18px;font-weight:700;fill:#68748a">65</text>
+
+    <rect x="12" y="522" width="280" height="112" class="soft"/>
+    <text x="26" y="551" class="h3">为什么只展示 3 项？</text>
+    <text x="26" y="576" class="small">退款上升与单 SKU 集中贡献属于</text>
+    <text x="26" y="597" class="small">同一业务问题，已合并成一条 Finding。</text>
+    <text x="26" y="620" class="note">查看规则命中详情 ›</text>
+
+    <text x="18" y="686" class="h3">筛选（后续）</text>
+    <text x="18" y="711" class="tiny">首版不做复杂筛选、搜索和历史异常。</text>
+  </g>
+
+  <!-- Detail -->
+  <g transform="translate(524,198)">
+    <rect x="0" y="0" width="892" height="178" class="risk"/>
+    <rect x="18" y="18" width="42" height="23" fill="#f2d7d7" rx="4"/><text x="30" y="34" style="font-size:10px;fill:#a64a4a">第 1 名</text>
+    <rect x="69" y="18" width="48" height="23" fill="#f7e2e2" rx="4"/><text x="80" y="34" style="font-size:10px;fill:#a64a4a">高风险</text>
+    <text x="18" y="73" style="font-size:20px;font-weight:700">氨基酸净润洁面慕斯退款异常</text>
+    <text x="18" y="103" class="body">本期全店退款率升至 6.38%，QY-CLEAN-001 贡献了异常退款增量的 76%。</text>
+    <text x="18" y="132" class="small">根规则：退款率较基线增加至少 3pp　定位证据：单 SKU 异常贡献超过 40%</text>
+    <text x="18" y="156" class="tiny">规则命中已合并为一个 Finding；发货变慢只作为待验证线索，不作为确定原因。</text>
+    <text x="774" y="70" class="small">综合优先级</text>
+    <text x="792" y="110" style="font-size:34px;font-weight:700;fill:#a64a4a">89</text>
+    <text x="775" y="139" class="small">置信度 86%</text>
+
+    <!-- Priority rationale -->
+    <text x="0" y="216" class="h2">为什么它排在第一</text>
+    <rect x="0" y="234" width="278" height="112" class="active"/>
+    <text x="18" y="263" class="small">异常严重程度 · 权重 45%</text><text x="224" y="267" style="font-size:21px;font-weight:700">92</text>
+    <rect x="18" y="283" width="230" height="11" fill="#e1e6ef" rx="6"/><rect x="18" y="283" width="212" height="11" fill="#8fa4dd" rx="6"/>
+    <text x="18" y="321" class="tiny">退款率增幅已越过 3pp 高风险阈值</text>
+    <rect x="294" y="234" width="278" height="112" class="box"/>
+    <text x="312" y="263" class="small">经营影响程度 · 权重 35%</text><text x="518" y="267" style="font-size:21px;font-weight:700">88</text>
+    <rect x="312" y="283" width="230" height="11" fill="#e1e6ef" rx="6"/><rect x="312" y="283" width="202" height="11" fill="#a3aec2" rx="6"/>
+    <text x="312" y="321" class="tiny">已影响净收入，且单 SKU 贡献集中</text>
+    <rect x="588" y="234" width="304" height="112" class="box"/>
+    <text x="606" y="263" class="small">数据置信度 · 权重 20%</text><text x="838" y="267" style="font-size:21px;font-weight:700">86</text>
+    <rect x="606" y="283" width="256" height="11" fill="#e1e6ef" rx="6"/><rect x="606" y="283" width="220" height="11" fill="#a3aec2" rx="6"/>
+    <text x="606" y="321" class="tiny">两期样本量充足，异常集中度明确</text>
+
+    <!-- Metric cards -->
+    <text x="0" y="386" class="h2">指标与规则口径</text>
+    <rect x="0" y="404" width="211" height="94" class="box"/>
+    <text x="16" y="430" class="small">当前退款率</text><text x="16" y="465" style="font-size:24px;font-weight:700">6.38%</text><text x="139" y="465" style="font-size:10px;fill:#b64d4d">+3.23pp</text>
+    <rect x="227" y="404" width="211" height="94" class="box"/>
+    <text x="243" y="430" class="small">基线退款率</text><text x="243" y="465" style="font-size:24px;font-weight:700">3.16%</text><text x="243" y="485" class="tiny">前 7 个完整自然日</text>
+    <rect x="454" y="404" width="211" height="94" class="box"/>
+    <text x="470" y="430" class="small">规则阈值</text><text x="470" y="465" style="font-size:24px;font-weight:700">≥ +3pp</text><text x="470" y="485" class="tiny">两期订单均不少于 20</text>
+    <rect x="681" y="404" width="211" height="94" class="box"/>
+    <text x="697" y="430" class="small">关联 SKU 贡献</text><text x="697" y="465" style="font-size:24px;font-weight:700">76%</text><text x="697" y="485" class="tiny">超额退款贡献占比</text>
+
+    <!-- Trend and contribution -->
+    <text x="0" y="540" class="h2">异常趋势与贡献定位</text>
+    <rect x="0" y="558" width="558" height="260" class="box"/>
+    <text x="16" y="586" class="small">退款率趋势 · 单位 % · 粒度日</text>
+    <line x1="48" y1="764" x2="526" y2="764" class="line"/>
+    <line x1="48" y1="616" x2="48" y2="764" class="line"/>
+    <path d="M48 730 L68 723 L88 731 L108 716 L128 722 L148 710 L168 719 L188 713 L208 724 L228 715 L248 721 L268 712 L288 720 L308 714 L328 722 L348 717 L368 710 L388 720 L408 707 L428 699 L448 661 L468 635 L488 648 L508 620 L526 632" stroke="#7184bd" stroke-width="3" fill="none"/>
+    <line x1="428" y1="608" x2="428" y2="764" class="dash"/>
+    <text x="439" y="624" class="tiny">本期开始</text>
+    <text x="48" y="790" class="tiny">07/31</text><text x="270" y="790" class="tiny">08/15</text><text x="494" y="790" class="tiny">08/29</text>
+
+    <rect x="574" y="558" width="318" height="260" class="box"/>
+    <text x="592" y="586" class="h3">SKU 异常贡献</text>
+    <text x="592" y="609" class="tiny">按超额退款贡献排序</text>
+    <text x="592" y="649" class="small">氨基酸净润洁面慕斯</text><rect x="592" y="661" width="236" height="13" fill="#e5e8ee" rx="6"/><rect x="592" y="661" width="179" height="13" fill="#a7b2c6" rx="6"/><text x="841" y="672" class="small">76%</text>
+    <text x="592" y="712" class="small">舒缓修护面膜</text><rect x="592" y="724" width="236" height="13" fill="#e5e8ee" rx="6"/><rect x="592" y="724" width="52" height="13" fill="#c2c9d5" rx="6"/><text x="841" y="735" class="small">22%</text>
+    <text x="592" y="775" class="small">其他 SKU</text><rect x="592" y="787" width="236" height="13" fill="#e5e8ee" rx="6"/><rect x="592" y="787" width="10" height="13" fill="#d2d7df" rx="6"/><text x="841" y="798" class="small">4%</text>
+
+    <!-- Evidence and hypotheses -->
+    <text x="0" y="860" class="h2">事实证据与待验证原因</text>
+    <rect x="0" y="878" width="432" height="192" class="box"/>
+    <text x="18" y="908" class="h3">数据事实</text>
+    <text x="18" y="940" class="body">· 全店退款率较基线上升 3.23pp</text>
+    <text x="18" y="969" class="body">· QY-CLEAN-001 本期退款 38 单</text>
+    <text x="18" y="998" class="body">· 该 SKU 贡献超额退款的 76%</text>
+    <text x="18" y="1027" class="body">· 平均发货时长升至 61.1 小时</text>
+    <rect x="448" y="878" width="444" height="192" class="soft"/>
+    <text x="466" y="908" class="h3">待验证原因</text>
+    <text x="466" y="940" class="body">· 最近批次质量或包装可能发生变化</text>
+    <text x="466" y="969" class="body">· 发货延迟可能提高退款倾向</text>
+    <text x="466" y="998" class="body">· 商品预期与详情页表达可能不一致</text>
+    <text x="466" y="1034" class="tiny">以上为验证方向，不是已确定原因；需结合订单抽样与退款原因。</text>
+
+    <!-- Rule recommendation -->
+    <text x="0" y="1112" class="h2">规则建议与下一步</text>
+    <rect x="0" y="1130" width="892" height="124" class="active"/>
+    <text x="18" y="1160" class="h3">建议先核查该 SKU 最近批次质量，并抽样检查延迟发货订单与退款原因</text>
+    <text x="18" y="1189" class="small">验证指标：未来 7 日该 SKU 退款率｜辅助指标：平均发货时长、退款原因分布、有效订单样本量</text>
+    <text x="18" y="1215" class="tiny">规则建议可复现；AI 可帮助解释和补充检查步骤，但不能修改异常排名。</text>
+    <rect x="555" y="1202" width="144" height="36" class="ai"/><text x="577" y="1225" class="body">让 AI 解释这个异常</text>
+    <rect x="713" y="1202" width="161" height="36" class="active"/><text x="738" y="1225" class="body">创建行动工单（下一阶段）</text>
+  </g>
+
+  <text x="200" y="1463" class="note">线框使用“组合异常示例”表达多异常排序；正式页面根据当前导入数据动态显示，相关规则会先合并为独立 Finding。</text>
+  <text x="200" y="1487" class="small">AI 默认收起；点击详情中的“让 AI 解释”后从右侧展开，并自动携带当前异常上下文。</text>
+  <text x="200" y="1511" class="tiny">低保真数值仅用于表达信息层级；视觉配色和完整响应式统一放在核心功能完成后的 UI 优化阶段。</text>
+</svg>

@@ -20,11 +20,12 @@ import {
   X,
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
+import { DiagnosisPage } from './components/DiagnosisPage'
 import { TrendChart } from './components/TrendChart'
 import { parseMerchantCsv, type CsvImportResult } from './lib/csv'
 import {
   buildDashboardSnapshot,
-  type DashboardSnapshot,
+  type DiagnosisFinding,
   type PrimaryFinding,
 } from './lib/dashboard'
 import type { StoreDataRow } from './types/data'
@@ -175,11 +176,11 @@ function QualityModal({ result, onClose }: { result: CsvImportResult; onClose: (
 }
 
 function AiDrawer({
-  snapshot,
+  finding,
   initialQuestion,
   onClose,
 }: {
-  snapshot: DashboardSnapshot
+  finding: PrimaryFinding
   initialQuestion?: string
   onClose: () => void
 }) {
@@ -187,14 +188,14 @@ function AiDrawer({
   const [input, setInput] = useState('')
   const [question, setQuestion] = useState(initialQuestion ?? '')
   const [answer, setAnswer] = useState<RuleAnswer | null>(
-    initialQuestion ? ruleAnswerFor(snapshot.primaryFinding, initialQuestion) : null,
+    initialQuestion ? ruleAnswerFor(finding, initialQuestion) : null,
   )
 
   const ask = (value: string) => {
     const normalized = value.trim()
     if (!normalized) return
     setQuestion(normalized)
-    setAnswer(ruleAnswerFor(snapshot.primaryFinding, normalized))
+    setAnswer(ruleAnswerFor(finding, normalized))
     setInput('')
   }
 
@@ -254,6 +255,10 @@ export default function App() {
   const [qualityOpen, setQualityOpen] = useState(false)
   const [aiOpen, setAiOpen] = useState(false)
   const [aiQuestion, setAiQuestion] = useState<string | undefined>()
+  const [aiFinding, setAiFinding] = useState<PrimaryFinding | null>(null)
+  const [route, setRoute] = useState<'overview' | 'diagnosis'>(() =>
+    window.location.pathname.startsWith('/diagnosis') ? 'diagnosis' : 'overview',
+  )
   const [trendMetric, setTrendMetric] = useState<TrendMetric>('netRevenue')
   const [notice, setNotice] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -281,6 +286,12 @@ export default function App() {
 
   useEffect(() => {
     void loadScenario(DEFAULT_SCENARIO)
+  }, [])
+
+  useEffect(() => {
+    const handlePopState = () => setRoute(window.location.pathname.startsWith('/diagnosis') ? 'diagnosis' : 'overview')
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
   }, [])
 
   useEffect(() => {
@@ -313,8 +324,15 @@ export default function App() {
     if (result.issues.length > 0) setQualityOpen(true)
   }
 
-  const openAi = (question?: string) => {
+  const navigate = (path: string) => {
+    window.history.pushState({}, '', path)
+    setRoute(path.startsWith('/diagnosis') ? 'diagnosis' : 'overview')
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }
+
+  const openAi = (question?: string, targetFinding?: PrimaryFinding) => {
     setAiQuestion(question)
+    setAiFinding(targetFinding ?? snapshot?.primaryFinding ?? null)
     setAiOpen(true)
   }
 
@@ -348,8 +366,8 @@ export default function App() {
       <aside className="sidebar">
         <div className="brand"><span className="brand-mark"><BarChart3 size={19} /></span><div><strong>商家经营罗盘</strong><small>MerchantOps Copilot</small></div></div>
         <nav aria-label="产品导航">
-          <button className="nav-item nav-active" type="button"><LayoutDashboard size={17} />经营总览</button>
-          <button className="nav-item" type="button" disabled><TriangleAlert size={17} />异常诊断<span>下一阶段</span></button>
+          <button className={`nav-item ${route === 'overview' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/')}><LayoutDashboard size={17} />经营总览</button>
+          <button className={`nav-item ${route === 'diagnosis' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/diagnosis')}><TriangleAlert size={17} />异常诊断{snapshot.findings.length > 0 && <span>{snapshot.findings.length}</span>}</button>
           <button className="nav-item" type="button" disabled><ListTodo size={17} />行动工单<span>下一阶段</span></button>
           <button className="nav-item" type="button" disabled><ClipboardCheck size={17} />周度复盘<span>下一阶段</span></button>
         </nav>
@@ -357,6 +375,16 @@ export default function App() {
       </aside>
 
       <div className="workspace">
+        {route === 'diagnosis' ? (
+          <DiagnosisPage
+            snapshot={snapshot}
+            initialFindingId={new URLSearchParams(window.location.search).get('finding') ?? undefined}
+            sourceName={selectedScenario === 'custom' ? `上传：${customFileName}` : `演示场景：${currentScenarioName}`}
+            onBack={() => navigate('/')}
+            onExplain={(target: DiagnosisFinding) => openAi('请解释这个经营异常，并告诉我应该先做什么。', target)}
+          />
+        ) : (
+        <>
         <header className="topbar">
           <div className="page-title"><h1>经营总览</h1><p>青柚研究所 · 美妆个护 · 数据截止 {snapshot.latestCompleteDate}</p></div>
           <div className="top-actions">
@@ -401,7 +429,7 @@ export default function App() {
               <p className="finding-summary">{finding.summary}</p>
               <div className="finding-bottom">
                 <div className="evidence-box"><strong>数据证据</strong><div>{finding.evidence.map((item) => <span key={item}>{item}</span>)}</div><p>待验证：{finding.caveat}</p></div>
-                <div className="finding-actions"><span>置信度 {Math.round(finding.confidence * 100)}%</span><button className="button button-secondary" type="button" disabled>查看完整诊断</button><button className="button button-primary" type="button" onClick={() => openAi('请解释这个经营异常，并告诉我应该先做什么。')}><MessageSquareText size={15} />让 AI 解释</button></div>
+                <div className="finding-actions"><span>置信度 {Math.round(finding.confidence * 100)}%</span><button className="button button-secondary" type="button" onClick={() => navigate(`/diagnosis?finding=${finding.id}`)}>查看完整诊断</button><button className="button button-primary" type="button" onClick={() => openAi('请解释这个经营异常，并告诉我应该先做什么。', finding)}><MessageSquareText size={15} />让 AI 解释</button></div>
               </div>
             </article>
           </section>
@@ -421,10 +449,12 @@ export default function App() {
 
           <footer className="data-notice"><Info size={15} /><div><strong>数据来源说明</strong><p>交易字段参考 UCI Online Retail 数据结构；曝光、点击、库存、履约和退款为合成字段，仅用于产品演示。系统未接入任何社交或购物平台官方 API。</p></div></footer>
         </main>
+        </>
+        )}
       </div>
 
       {qualityOpen && importResult && <QualityModal result={importResult} onClose={() => setQualityOpen(false)} />}
-      {aiOpen && <AiDrawer key={`${selectedScenario}-${aiQuestion ?? 'empty'}`} snapshot={snapshot} initialQuestion={aiQuestion} onClose={() => setAiOpen(false)} />}
+      {aiOpen && aiFinding && <AiDrawer key={`${selectedScenario}-${aiFinding.id}-${aiQuestion ?? 'empty'}`} finding={aiFinding} initialQuestion={aiQuestion} onClose={() => setAiOpen(false)} />}
       {notice && <div className="toast" role="status"><CheckCircle2 size={16} />{notice}</div>}
     </div>
   )
