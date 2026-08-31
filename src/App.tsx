@@ -23,6 +23,7 @@ import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent 
 import { ActionCenterPage } from './components/ActionCenterPage'
 import { DiagnosisPage } from './components/DiagnosisPage'
 import { TrendChart } from './components/TrendChart'
+import { WeeklyReviewPage } from './components/WeeklyReviewPage'
 import { parseMerchantCsv, type CsvImportResult } from './lib/csv'
 import {
   buildDashboardSnapshot,
@@ -264,12 +265,13 @@ export default function App() {
   const [aiOpen, setAiOpen] = useState(false)
   const [aiQuestion, setAiQuestion] = useState<string | undefined>()
   const [aiFinding, setAiFinding] = useState<PrimaryFinding | null>(null)
-  const routeForPath = (path: string): 'overview' | 'diagnosis' | 'actions' => {
+  const routeForPath = (path: string): 'overview' | 'diagnosis' | 'actions' | 'review' => {
     if (path.startsWith('/diagnosis')) return 'diagnosis'
     if (path.startsWith('/actions')) return 'actions'
+    if (path.startsWith('/review')) return 'review'
     return 'overview'
   }
-  const [route, setRoute] = useState<'overview' | 'diagnosis' | 'actions'>(() => routeForPath(window.location.pathname))
+  const [route, setRoute] = useState<'overview' | 'diagnosis' | 'actions' | 'review'>(() => routeForPath(window.location.pathname))
   const [trendMetric, setTrendMetric] = useState<TrendMetric>('netRevenue')
   const [notice, setNotice] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -384,7 +386,7 @@ export default function App() {
           <button className={`nav-item ${route === 'overview' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/')}><LayoutDashboard size={17} />经营总览</button>
           <button className={`nav-item ${route === 'diagnosis' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/diagnosis')}><TriangleAlert size={17} />异常诊断{snapshot.findings.length > 0 && <span>{snapshot.findings.length}</span>}</button>
           <button className={`nav-item ${route === 'actions' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/actions')}><ListTodo size={17} />行动工单</button>
-          <button className="nav-item" type="button" disabled><ClipboardCheck size={17} />周度复盘<span>下一阶段</span></button>
+          <button className={`nav-item ${route === 'review' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/review')}><ClipboardCheck size={17} />周度复盘</button>
         </nav>
         <div className="sidebar-foot"><Database size={14} /><span>上传数据仅在浏览器本地解析</span></div>
       </aside>
@@ -414,6 +416,17 @@ export default function App() {
             initialSource={searchParams.get('source') === 'ai' ? 'ai' : 'rule'}
             onScenarioChange={(id) => void loadScenario(id)}
             onGoDiagnosis={() => navigate('/diagnosis')}
+          />
+        ) : route === 'review' ? (
+          <WeeklyReviewPage
+            snapshot={snapshot}
+            rows={rows}
+            scopeKey={scopeKey}
+            sourceName={selectedScenario === 'custom' ? `上传：${customFileName}` : `演示场景：${currentScenarioName}`}
+            scenarios={SCENARIOS}
+            selectedScenario={selectedScenario}
+            onScenarioChange={(id) => void loadScenario(id)}
+            onGoActions={() => navigate('/actions')}
           />
         ) : (
         <>

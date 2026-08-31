@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/diagnosis", "destination": "/index.html" },
-    { "source": "/actions", "destination": "/index.html" }
+    { "source": "/actions", "destination": "/index.html" },
+    { "source": "/review", "destination": "/index.html" }
   ]
 }

@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1120" viewBox="0 0 1600 1120">
+  <defs>
+    <style>
+      .bg{fill:#f2f5f9}.card{fill:#fff;stroke:#bcc7d8;stroke-width:2}.rule{fill:#eef4ff;stroke:#5d7fe0;stroke-width:2}.ai{fill:#f6f1ff;stroke:#8a70df;stroke-width:2}.user{fill:#fff8e8;stroke:#d4a344;stroke-width:2}.good{fill:#eff9f4;stroke:#58a47d;stroke-width:2}.risk{fill:#fff4f4;stroke:#df7777;stroke-width:2}.muted{fill:#f7f9fc;stroke:#cad2df;stroke-width:2}.title{font:700 32px 'Microsoft YaHei',sans-serif;fill:#10213b}.h2{font:700 20px 'Microsoft YaHei',sans-serif;fill:#13223a}.h3{font:700 16px 'Microsoft YaHei',sans-serif;fill:#17243a}.body{font:13px 'Microsoft YaHei',sans-serif;fill:#53627a}.small{font:12px 'Microsoft YaHei',sans-serif;fill:#718098}.ruleLabel{font:700 11px 'Microsoft YaHei',sans-serif;fill:#365dcb}.aiLabel{font:700 11px 'Microsoft YaHei',sans-serif;fill:#6a4fc1}.userLabel{font:700 11px 'Microsoft YaHei',sans-serif;fill:#94671e}.arrow{stroke:#7f8da3;stroke-width:2;fill:none;marker-end:url(#arrow)}.flow{stroke:#5075d6;stroke-width:3;fill:none;marker-end:url(#blueArrow)}.dash{stroke:#8d98a9;stroke-width:2;stroke-dasharray:7 6;fill:none;marker-end:url(#arrow)}
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#7f8da3"/></marker>
+    <marker id="blueArrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#5075d6"/></marker>
+  </defs>
+  <rect class="bg" width="1600" height="1120"/>
+  <text class="title" x="60" y="58">周度复盘｜信息架构 v0.1</text>
+  <text class="body" x="60" y="88">页面任务：在固定自然周中连接经营变化、异常处理和行动结果；规则给事实，AI做解释，用户确认经验与关单。</text>
+
+  <text class="h2" x="60" y="132">一、双时间轴与动态数据更新</text>
+  <rect class="card" x="60" y="154" width="300" height="128" rx="12"/>
+  <text class="h3" x="84" y="184">数据接入</text>
+  <text class="body" x="84" y="211">现在：用户上传 CSV</text>
+  <text class="body" x="84" y="234">未来：表格 / 飞书表格定时同步</text>
+  <text class="small" x="84" y="259">按 date + sku_id 新增或覆盖</text>
+
+  <rect class="rule" x="420" y="154" width="470" height="128" rx="12"/>
+  <text class="ruleLabel" x="444" y="181">系统规则｜经营周报时间</text>
+  <text class="h3" x="444" y="207">最近一个数据完整的周一—周日</text>
+  <text class="body" x="444" y="233">本期自然周 vs 上一完整自然周</text>
+  <text class="small" x="444" y="258">不足 7 日只展示阶段数据，不输出正式复盘结论</text>
+
+  <rect class="rule" x="950" y="154" width="590" height="128" rx="12"/>
+  <text class="ruleLabel" x="974" y="181">系统规则｜工单效果时间</text>
+  <text class="h3" x="974" y="207">实际执行日后第 1—7 个完整自然日</text>
+  <text class="body" x="974" y="233">跨周时，本周显示“监控中”，窗口完整后再给结论</text>
+  <text class="small" x="974" y="258">工单观察窗不因周报切换而改变</text>
+  <path class="flow" d="M360 218H405"/><path class="flow" d="M890 218H935"/>
+
+  <text class="h2" x="60" y="326">二、页面模块与责任分工</text>
+  <rect class="rule" x="60" y="350" width="350" height="250" rx="14"/>
+  <text class="ruleLabel" x="84" y="379">系统规则｜事实层</text>
+  <text class="h3" x="84" y="408">经营周报与问题进展</text>
+  <text class="body" x="84" y="440">• 本周 / 上周 KPI 与环比</text>
+  <text class="body" x="84" y="466">• 新增、延续、恢复异常</text>
+  <text class="body" x="84" y="492">• 工单执行与监控状态汇总</text>
+  <text class="body" x="84" y="518">• 数据完整度与来源提示</text>
+  <line x1="84" y1="540" x2="386" y2="540" stroke="#cdd9f5"/>
+  <text class="small" x="84" y="567">输出可复现的数字，不生成因果结论</text>
+
+  <rect class="rule" x="450" y="350" width="390" height="250" rx="14"/>
+  <text class="ruleLabel" x="474" y="379">系统规则｜效果判断</text>
+  <text class="h3" x="474" y="408">工单前后指标复盘</text>
+  <text class="body" x="474" y="440">• 冻结异常 → 工单 → 监控指标</text>
+  <text class="body" x="474" y="466">• 执行前 7 日 vs 执行后 7 日</text>
+  <text class="body" x="474" y="492">• 达阈值 / 改善未达标 / 未改善</text>
+  <text class="body" x="474" y="518">• 同期总体经营指标的实际变化</text>
+  <line x1="474" y1="540" x2="816" y2="540" stroke="#cdd9f5"/>
+  <text class="small" x="474" y="567">并行工单时标记“无法单独归因”</text>
+
+  <rect class="ai" x="880" y="350" width="350" height="250" rx="14"/>
+  <text class="aiLabel" x="904" y="379">AI｜解释层</text>
+  <text class="h3" x="904" y="408">经营解释与下周建议</text>
+  <text class="body" x="904" y="440">• 提炼本周经营结论</text>
+  <text class="body" x="904" y="466">• 解释工单结果的可能意义</text>
+  <text class="body" x="904" y="492">• 识别并行行动与不确定性</text>
+  <text class="body" x="904" y="518">• 排列下一周期建议</text>
+  <line x1="904" y1="540" x2="1206" y2="540" stroke="#ded4f6"/>
+  <text class="small" x="904" y="567">不能改指标、状态、阈值和优先级</text>
+
+  <rect class="user" x="1270" y="350" width="270" height="250" rx="14"/>
+  <text class="userLabel" x="1294" y="379">用户｜决策层</text>
+  <text class="h3" x="1294" y="408">确认与沉淀</text>
+  <text class="body" x="1294" y="440">• 补充执行备注</text>
+  <text class="body" x="1294" y="466">• 确认关闭已恢复工单</text>
+  <text class="body" x="1294" y="492">• 确认是否沉淀经验</text>
+  <text class="body" x="1294" y="518">• 决定是否采用建议</text>
+  <line x1="1294" y1="540" x2="1516" y2="540" stroke="#ead9b2"/>
+  <text class="small" x="1294" y="567">系统和 AI 均不能代替确认</text>
+  <path class="flow" d="M410 475H435"/><path class="flow" d="M840 475H865"/><path class="flow" d="M1230 475H1255"/>
+
+  <text class="h2" x="60" y="650">三、页面信息结构</text>
+  <rect class="muted" x="60" y="674" width="1480" height="238" rx="14"/>
+  <rect class="card" x="84" y="700" width="205" height="178" rx="10"/>
+  <text class="h3" x="104" y="730">① 周期与数据状态</text>
+  <text class="body" x="104" y="760">周选择器</text><text class="body" x="104" y="785">来源 / 完整度</text><text class="body" x="104" y="810">最近更新时间</text><text class="small" x="104" y="850">规则生成</text>
+  <rect class="card" x="309" y="700" width="205" height="178" rx="10"/>
+  <text class="h3" x="329" y="730">② 经营结论</text>
+  <text class="body" x="329" y="760">KPI 前后变化</text><text class="body" x="329" y="785">改善 / 恶化指标</text><text class="body" x="329" y="810">一句话摘要</text><text class="small" x="329" y="850">数字规则，摘要 AI</text>
+  <rect class="card" x="534" y="700" width="205" height="178" rx="10"/>
+  <text class="h3" x="554" y="730">③ 问题处理进展</text>
+  <text class="body" x="554" y="760">异常状态分布</text><text class="body" x="554" y="785">工单状态分布</text><text class="body" x="554" y="810">未采取行动问题</text><text class="small" x="554" y="850">规则生成</text>
+  <rect class="card" x="759" y="700" width="205" height="178" rx="10"/>
+  <text class="h3" x="779" y="730">④ 工单效果复盘</text>
+  <text class="body" x="779" y="760">行动与假设</text><text class="body" x="779" y="785">前后指标 / 阈值</text><text class="body" x="779" y="810">总体经营同期变化</text><text class="small" x="779" y="850">规则结论＋AI解释</text>
+  <rect class="card" x="984" y="700" width="250" height="178" rx="10"/>
+  <text class="h3" x="1004" y="730">⑤ 候选经验</text>
+  <text class="body" x="1004" y="760">场景 / 信号 / 行动</text><text class="body" x="1004" y="785">结果 / 条件 / 限制</text><text class="body" x="1004" y="810">用户确认后保存</text><text class="small" x="1004" y="850">AI 草拟，用户确认</text>
+  <rect class="card" x="1254" y="700" width="262" height="178" rx="10"/>
+  <text class="h3" x="1274" y="730">⑥ 下周行动</text>
+  <text class="body" x="1274" y="760">未恢复问题续办</text><text class="body" x="1274" y="785">新异常建立工单</text><text class="body" x="1274" y="810">下周优先事项</text><text class="small" x="1274" y="850">规则底稿＋AI排序解释</text>
+
+  <text class="h2" x="60" y="960">四、核心数据关系</text>
+  <rect class="rule" x="60" y="986" width="220" height="76" rx="10"/><text class="h3" x="82" y="1017">WeeklyMetric</text><text class="small" x="82" y="1042">自然周经营事实</text>
+  <rect class="rule" x="340" y="986" width="220" height="76" rx="10"/><text class="h3" x="362" y="1017">FindingSnapshot</text><text class="small" x="362" y="1042">异常冻结证据</text>
+  <rect class="rule" x="620" y="986" width="220" height="76" rx="10"/><text class="h3" x="642" y="1017">ActionWorkOrder</text><text class="small" x="642" y="1042">执行与监控结果</text>
+  <rect class="ai" x="900" y="986" width="220" height="76" rx="10"/><text class="h3" x="922" y="1017">WeeklyReview</text><text class="small" x="922" y="1042">事实＋AI解释</text>
+  <rect class="user" x="1180" y="986" width="360" height="76" rx="10"/><text class="h3" x="1202" y="1017">ExperienceCandidate → Experience</text><text class="small" x="1202" y="1042">AI 草拟 → 用户确认 → 后续相似问题复用</text>
+  <path class="arrow" d="M280 1024H325"/><path class="arrow" d="M560 1024H605"/><path class="arrow" d="M840 1024H885"/><path class="arrow" d="M1120 1024H1165"/>
+</svg>
