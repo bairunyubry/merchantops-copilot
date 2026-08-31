@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200">
+  <defs>
+    <style>
+      .bg{fill:#eef2f7}.side{fill:#202b3d}.white{fill:#fff}.card{fill:#fff;stroke:#bec9d9;stroke-width:1.5}.muted{fill:#f6f8fb;stroke:#d3dae5;stroke-width:1.3}.blue{fill:#eef4ff;stroke:#6a89ed;stroke-width:1.5}.green{fill:#eff9f4;stroke:#65a985;stroke-width:1.5}.amber{fill:#fff8eb;stroke:#d4a954;stroke-width:1.5}.red{fill:#fff4f4;stroke:#df7d7d;stroke-width:1.5}.purple{fill:#f7f3ff;stroke:#9a82e9;stroke-width:1.5}.h1{font:700 25px 'Microsoft YaHei',sans-serif;fill:#112039}.h2{font:700 17px 'Microsoft YaHei',sans-serif;fill:#16243a}.h3{font:700 14px 'Microsoft YaHei',sans-serif;fill:#1b2940}.body{font:12px 'Microsoft YaHei',sans-serif;fill:#536278}.small{font:10px 'Microsoft YaHei',sans-serif;fill:#7b889b}.sideText{font:13px 'Microsoft YaHei',sans-serif;fill:#c4cedc}.sideTitle{font:700 14px 'Microsoft YaHei',sans-serif;fill:#fff}.number{font:700 24px 'Microsoft YaHei',sans-serif;fill:#17243a}.tag{font:700 10px 'Microsoft YaHei',sans-serif}.line{stroke:#dce2ea;stroke-width:1}.dash{stroke:#8fa0b8;stroke-width:1.5;stroke-dasharray:5 5}.arrow{stroke:#6685df;stroke-width:2.5;fill:none;marker-end:url(#arr)}
+    </style>
+    <marker id="arr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#6685df"/></marker>
+    <filter id="shadow" x="-20%" y="-20%" width="150%" height="150%"><feDropShadow dx="-8" dy="2" stdDeviation="10" flood-color="#17233a" flood-opacity=".18"/></filter>
+  </defs>
+  <rect class="bg" width="1600" height="1200"/>
+
+  <!-- global navigation -->
+  <rect class="side" x="0" y="0" width="176" height="1200"/>
+  <rect x="22" y="24" width="34" height="34" rx="9" fill="#344663"/><text x="34" y="47" font-family="sans-serif" font-size="20" fill="#fff">▥</text>
+  <text class="sideTitle" x="66" y="41">商家经营罗盘</text><text x="66" y="59" font-family="sans-serif" font-size="9" fill="#8d9bb0">MerchantOps Copilot</text>
+  <text class="sideText" x="24" y="117">▦  经营总览</text>
+  <text class="sideText" x="24" y="165">△  异常诊断</text>
+  <rect x="14" y="190" width="148" height="46" rx="8" fill="#34445f"/><text x="24" y="219" font-family="Microsoft YaHei" font-size="13" fill="#fff">✓  行动工单</text>
+  <text class="sideText" x="24" y="267">▣  周度复盘</text>
+  <line x1="20" y1="310" x2="156" y2="310" stroke="#3b485c"/>
+  <text x="24" y="338" font-family="Microsoft YaHei" font-size="10" fill="#8290a5">工单与当前数据范围一致</text>
+
+  <!-- top bar -->
+  <rect class="white" x="176" y="0" width="1424" height="90"/><line x1="176" y1="89" x2="1600" y2="89" class="line"/>
+  <text class="h1" x="204" y="39">行动工单</text><text class="small" x="204" y="63">青柚研究所 · 组合C｜全链路告警 · 数据截止 2026-09-05</text>
+  <rect class="muted" x="1045" y="24" width="210" height="42" rx="8"/><text class="body" x="1063" y="50">数据范围：当前演示场景⌄</text>
+  <rect class="blue" x="1271" y="24" width="145" height="42" rx="8"/><text x="1305" y="50" font-family="Microsoft YaHei" font-size="12" font-weight="700" fill="#3459c5">＋ 创建工单</text>
+  <rect class="purple" x="1430" y="24" width="142" height="42" rx="8"/><text x="1464" y="50" font-family="Microsoft YaHei" font-size="12" font-weight="700" fill="#654ebd">AI 助手 ✦</text>
+
+  <!-- data status -->
+  <rect class="card" x="200" y="112" width="1376" height="58" rx="10"/>
+  <circle cx="224" cy="141" r="6" fill="#59a47f"/><text class="h3" x="242" y="138">经营数据已更新，可评估 2 张待复盘工单</text>
+  <text class="small" x="242" y="157">本次数据覆盖至 09-05；系统只评估与“当前数据范围”关联的工单</text>
+  <text x="1364" y="144" font-family="Microsoft YaHei" font-size="11" fill="#3d65cd">查看本次监控结果 ›</text>
+
+  <!-- summary cards -->
+  <rect class="card" x="200" y="190" width="260" height="82" rx="10"/><text class="small" x="220" y="216">待处理</text><text class="number" x="220" y="249">2</text><text class="small" x="264" y="247">其中逾期 1</text>
+  <rect class="card" x="476" y="190" width="260" height="82" rx="10"/><text class="small" x="496" y="216">进行中 / 已执行</text><text class="number" x="496" y="249">3</text><text class="small" x="540" y="247">等待形成观察窗口</text>
+  <rect class="amber" x="752" y="190" width="260" height="82" rx="10"/><text class="small" x="772" y="216">待复盘</text><text class="number" x="772" y="249">2</text><text class="small" x="816" y="247">数据已满足评估条件</text>
+  <rect class="green" x="1028" y="190" width="260" height="82" rx="10"/><text class="small" x="1048" y="216">已恢复</text><text class="number" x="1048" y="249">1</text><text class="small" x="1092" y="247">等待用户确认关闭</text>
+
+  <!-- filters -->
+  <text class="h2" x="200" y="315">全部工单</text><text class="small" x="279" y="315">8 项 · 按行动优先级排序</text>
+  <rect class="muted" x="200" y="330" width="1376" height="54" rx="9"/>
+  <rect class="white" x="216" y="340" width="225" height="34" rx="7" stroke="#cad3e0"/><text class="small" x="232" y="361">搜索工单或关联 SKU</text>
+  <rect class="white" x="454" y="340" width="145" height="34" rx="7" stroke="#cad3e0"/><text class="body" x="470" y="361">执行状态：全部⌄</text>
+  <rect class="white" x="610" y="340" width="145" height="34" rx="7" stroke="#cad3e0"/><text class="body" x="626" y="361">监控状态：全部⌄</text>
+  <rect class="white" x="766" y="340" width="145" height="34" rx="7" stroke="#cad3e0"/><text class="body" x="782" y="361">来源异常：全部⌄</text>
+  <text class="small" x="1451" y="361">仅看当前数据范围 ✓</text>
+
+  <!-- full-width work order list -->
+  <rect class="card" x="200" y="402" width="1376" height="680" rx="10"/>
+  <rect x="201" y="403" width="1374" height="48" rx="9" fill="#f7f9fc"/>
+  <text class="small" x="224" y="432">工单 / 来源异常</text><text class="small" x="605" y="432">执行状态</text><text class="small" x="745" y="432">监控指标</text><text class="small" x="950" y="432">监控反馈</text><text class="small" x="1165" y="432">复盘日期</text><text class="small" x="1305" y="432">行动优先级</text><text class="small" x="1480" y="432">操作</text>
+
+  <rect x="201" y="451" width="1374" height="104" fill="#f3f7ff"/><rect x="201" y="451" width="4" height="104" fill="#6380d2"/>
+  <text class="h3" x="224" y="480">抽查洁面乳批次质量并核对退款原因</text><text class="small" x="224" y="503">来自：洁面乳退款异常 · QY-CLEAN-001</text><text class="small" x="224" y="525">工单 WO-20260829-001</text>
+  <rect x="605" y="473" width="56" height="22" rx="5" fill="#e8edf5"/><text class="tag" x="618" y="488" fill="#56657b">已执行</text>
+  <text class="body" x="745" y="480">退款率</text><text class="small" x="745" y="503">恢复规则：低于 6.16%</text>
+  <rect x="950" y="473" width="56" height="22" rx="5" fill="#daf1e5"/><text class="tag" x="963" y="488" fill="#267050">已恢复</text><text class="small" x="950" y="515">6.38% → 4.72%</text>
+  <text class="body" x="1165" y="486">2026-09-05</text><text class="small" x="1165" y="509">今天</text>
+  <text class="h3" x="1334" y="486">8.6</text><text class="small" x="1310" y="509">影响×置信÷成本</text><text x="1490" y="490" font-family="sans-serif" font-size="18" fill="#61718a">›</text>
+
+  <line class="line" x1="216" y1="555" x2="1560" y2="555"/>
+  <text class="h3" x="224" y="586">优化仓内排单并优先处理超时订单</text><text class="small" x="224" y="609">来自：48 小时发货达成率异常 · 全店</text><text class="small" x="224" y="631">工单 WO-20260829-002</text>
+  <rect x="605" y="579" width="56" height="22" rx="5" fill="#e8edf5"/><text class="tag" x="618" y="594" fill="#56657b">已执行</text>
+  <text class="body" x="745" y="586">48h 发货达成率</text><text class="small" x="745" y="609">恢复规则：达到 90%</text>
+  <rect x="950" y="579" width="56" height="22" rx="5" fill="#fff0cf"/><text class="tag" x="963" y="594" fill="#916415">改善中</text><text class="small" x="950" y="621">74.41% → 88.20%</text>
+  <text class="body" x="1165" y="592">2026-09-05</text><text class="small" x="1165" y="615">今天</text><text class="h3" x="1334" y="592">8.2</text><text x="1490" y="596" font-family="sans-serif" font-size="18" fill="#61718a">›</text>
+
+  <line class="line" x1="216" y1="659" x2="1560" y2="659"/>
+  <text class="h3" x="224" y="690">确认防晒乳在途补货并降低投放</text><text class="small" x="224" y="713">来自：库存覆盖不足 · QY-SUN-005</text><text class="small" x="224" y="735">工单 WO-20260830-003</text>
+  <rect x="605" y="683" width="56" height="22" rx="5" fill="#eaf0ff"/><text class="tag" x="618" y="698" fill="#3c5fb6">进行中</text>
+  <text class="body" x="745" y="690">库存覆盖天数</text><text class="small" x="745" y="713">恢复规则：达到 7 天</text>
+  <rect x="950" y="683" width="56" height="22" rx="5" fill="#e8edf5"/><text class="tag" x="963" y="698" fill="#677489">监控中</text><text class="small" x="950" y="725">还需 2 个完整自然日</text>
+  <text class="body" x="1165" y="696">2026-09-07</text><text class="h3" x="1334" y="696">7.4</text><text x="1490" y="700" font-family="sans-serif" font-size="18" fill="#61718a">›</text>
+
+  <line class="line" x1="216" y1="763" x2="1560" y2="763"/>
+  <text class="h3" x="224" y="794">修正面霜商品信息并检查流量结构</text><text class="small" x="224" y="817">来自：点击—支付转化率下降 · QY-CREAM-003</text><text class="small" x="224" y="839">工单 WO-20260831-004</text>
+  <rect x="605" y="787" width="56" height="22" rx="5" fill="#fff0cf"/><text class="tag" x="618" y="802" fill="#916415">待处理</text>
+  <text class="body" x="745" y="794">点击—支付转化率</text><text class="small" x="745" y="817">恢复规则：不再下降 20%</text>
+  <rect x="950" y="787" width="62" height="22" rx="5" fill="#f0f2f5"/><text class="tag" x="963" y="802" fill="#788396">未开始</text><text class="small" x="950" y="829">等待记录执行日期</text>
+  <text class="body" x="1165" y="800">2026-09-08</text><text class="h3" x="1334" y="800">6.9</text><text x="1490" y="804" font-family="sans-serif" font-size="18" fill="#61718a">›</text>
+
+  <line class="line" x1="216" y1="867" x2="1560" y2="867"/>
+  <text class="h3" x="224" y="898">复核精华液退款原因与客服话术</text><text class="small" x="224" y="921">来自：用户手动创建 · QY-SERUM-002</text>
+  <rect x="605" y="891" width="56" height="22" rx="5" fill="#eaf0ff"/><text class="tag" x="618" y="906" fill="#3c5fb6">进行中</text>
+  <text class="body" x="745" y="898">退款率</text><text class="small" x="745" y="921">恢复规则：用户设为 ≤ 5%</text>
+  <rect x="950" y="891" width="62" height="22" rx="5" fill="#fce0e0"/><text class="tag" x="963" y="906" fill="#9b4848">数据不足</text><text class="small" x="950" y="933">当前数据缺少行动后日期</text>
+  <text class="body" x="1165" y="904">2026-09-10</text><text class="h3" x="1334" y="904">5.8</text><text x="1490" y="908" font-family="sans-serif" font-size="18" fill="#61718a">›</text>
+
+  <!-- open detail drawer overlay -->
+  <rect x="176" y="90" width="1424" height="1110" fill="#18243a" opacity=".18"/>
+  <g filter="url(#shadow)">
+    <rect class="white" x="1090" y="0" width="510" height="1200"/>
+    <line class="line" x1="1090" y1="86" x2="1600" y2="86"/>
+    <text class="small" x="1118" y="28">行动工单详情 · WO-20260829-001</text>
+    <text class="h2" x="1118" y="56">抽查洁面乳批次质量并核对退款原因</text><text x="1562" y="47" font-family="sans-serif" font-size="22" fill="#66758b">×</text>
+    <rect x="1118" y="104" width="66" height="24" rx="5" fill="#e8edf5"/><text class="tag" x="1132" y="120" fill="#56657b">已执行</text>
+    <rect x="1194" y="104" width="66" height="24" rx="5" fill="#daf1e5"/><text class="tag" x="1208" y="120" fill="#267050">已恢复</text>
+    <text class="small" x="1274" y="120">复盘日 2026-09-05</text>
+
+    <text class="h3" x="1118" y="166">关联异常快照</text>
+    <rect class="muted" x="1118" y="181" width="454" height="126" rx="8"/>
+    <text class="body" x="1136" y="207">洁面乳退款异常 · QY-CLEAN-001</text>
+    <text class="small" x="1136" y="231">创建周期：08-23–08-29｜规则：退款率较基线上升 ≥ 3pp</text>
+    <text class="small" x="1136" y="254">创建时值 6.38%｜基线 3.16%｜恢复阈值 &lt; 6.16%</text>
+    <text class="small" x="1136" y="278">证据已冻结；后续 Finding 消失也保留本口径</text>
+
+    <text class="h3" x="1118" y="345">行动记录</text>
+    <rect class="card" x="1118" y="360" width="454" height="98" rx="8"/>
+    <text class="body" x="1136" y="386">实际动作：抽查最近批次质量，核对延迟发货订单与退款原因</text>
+    <text class="small" x="1136" y="412">执行日期：2026-08-29｜备注：包装破损订单已单独联系</text>
+    <text class="small" x="1136" y="438">执行状态可手动更新，执行完成不自动等同于问题解决</text>
+
+    <text class="h3" x="1118" y="496">指标监控</text>
+    <rect class="green" x="1118" y="511" width="454" height="224" rx="9"/>
+    <text class="small" x="1138" y="540">主指标：退款率｜完整观察窗口 08-30–09-05</text>
+    <text class="small" x="1138" y="577">创建时</text><text x="1138" y="606" font-family="Microsoft YaHei" font-size="24" font-weight="700" fill="#9f4c4c">6.38%</text>
+    <path class="arrow" d="M1232 595H1292"/>
+    <text class="small" x="1310" y="577">最新 7 日</text><text x="1310" y="606" font-family="Microsoft YaHei" font-size="24" font-weight="700" fill="#287257">4.72%</text>
+    <line class="dash" x1="1138" y1="640" x2="1548" y2="640"/>
+    <text class="small" x="1138" y="662">恢复规则：退款率 &lt; 6.16%，且支付订单行样本 ≥ 20</text>
+    <rect x="1138" y="680" width="414" height="34" rx="7" fill="#d8efe4"/><text x="1152" y="702" font-family="Microsoft YaHei" font-size="11" font-weight="700" fill="#256c4f">✓ 原异常规则不再触发，系统判定“已恢复”</text>
+
+    <text class="h3" x="1118" y="774">系统反馈</text>
+    <rect class="blue" x="1118" y="789" width="454" height="110" rx="8"/>
+    <text class="body" x="1136" y="817">退款率下降 1.66 个百分点，并低于恢复阈值。</text>
+    <text class="small" x="1136" y="842">规则结论：已恢复｜数据置信度：高｜评估时间：09-05 09:30</text>
+    <text class="small" x="1136" y="867">AI 可解释变化和后续建议，但不能修改“已恢复”状态。</text>
+    <text x="1136" y="887" font-family="Microsoft YaHei" font-size="10" fill="#5d49b4">让 AI 生成复盘总结 ›</text>
+
+    <text class="h3" x="1118" y="938">工单时间线</text>
+    <circle cx="1128" cy="967" r="5" fill="#6983cf"/><line x1="1128" y1="972" x2="1128" y2="1057" stroke="#c7d0df"/>
+    <text class="body" x="1146" y="971">08-29 创建工单并冻结异常快照</text>
+    <circle cx="1128" cy="1009" r="5" fill="#6983cf"/><text class="body" x="1146" y="1013">08-29 标记行动已执行，开始 7 日监控</text>
+    <circle cx="1128" cy="1051" r="5" fill="#57a17b"/><text class="body" x="1146" y="1055">09-05 数据更新，系统反馈“已恢复”</text>
+
+    <rect class="muted" x="1118" y="1090" width="178" height="44" rx="8"/><text class="body" x="1164" y="1117">继续观察一周期</text>
+    <rect class="green" x="1308" y="1090" width="264" height="44" rx="8"/><text x="1370" y="1117" font-family="Microsoft YaHei" font-size="12" font-weight="700" fill="#286e52">确认问题解决并关闭工单</text>
+    <text class="small" x="1118" y="1164">最终关闭由用户确认；系统不会仅凭一次指标改善自动关单。</text>
+  </g>
+</svg>

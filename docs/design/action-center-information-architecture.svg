@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1050" viewBox="0 0 1600 1050">
+  <defs>
+    <style>
+      .bg{fill:#f2f5f9}.card{fill:#fff;stroke:#bcc7d8;stroke-width:2}.blue{fill:#eef4ff;stroke:#4d76ff;stroke-width:2}.red{fill:#fff5f4;stroke:#ec6f6f;stroke-width:2}.green{fill:#effaf5;stroke:#4fa57c;stroke-width:2}.purple{fill:#f5f1ff;stroke:#8064ef;stroke-width:2}.muted{fill:#f7f9fc;stroke:#cad2df;stroke-width:2}.title{font:700 32px 'Microsoft YaHei',sans-serif;fill:#10213b}.h2{font:700 20px 'Microsoft YaHei',sans-serif;fill:#13223a}.h3{font:700 16px 'Microsoft YaHei',sans-serif;fill:#17243a}.body{font:13px 'Microsoft YaHei',sans-serif;fill:#53627a}.small{font:12px 'Microsoft YaHei',sans-serif;fill:#718098}.label{font:700 12px 'Microsoft YaHei',sans-serif;fill:#365dcb}.arrow{stroke:#7f8da3;stroke-width:2;fill:none;marker-end:url(#arrow)}.flow{stroke:#4d76ff;stroke-width:3;fill:none;marker-end:url(#blueArrow)}
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#7f8da3"/></marker>
+    <marker id="blueArrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#4d76ff"/></marker>
+  </defs>
+  <rect class="bg" width="1600" height="1050"/>
+  <text class="title" x="60" y="58">行动中心｜信息架构 v0.1</text>
+  <text class="body" x="60" y="88">页面任务：把异常建议变成可执行工单，并让后续经营数据自动反馈“是否恢复”，形成诊断—行动—监控—复盘闭环。</text>
+
+  <text class="h2" x="60" y="133">工单入口与数据范围</text>
+  <rect class="blue" x="60" y="155" width="390" height="105" rx="12"/>
+  <text class="h3" x="84" y="187">① 从异常诊断创建</text>
+  <text class="body" x="84" y="215">带入 Finding、规则建议、关联 SKU 与指标口径</text>
+  <text class="small" x="84" y="240">用户可采纳建议，也可改写行动内容</text>
+  <rect class="purple" x="605" y="155" width="390" height="105" rx="12"/>
+  <text class="h3" x="629" y="187">② 从 AI 建议创建</text>
+  <text class="body" x="629" y="215">带入建议、理由和验证方法，不改变异常事实</text>
+  <text class="small" x="629" y="240">AI 建议失败时仍可使用规则建议</text>
+  <rect class="card" x="1150" y="155" width="390" height="105" rx="12"/>
+  <text class="h3" x="1174" y="187">③ 用户手动创建</text>
+  <text class="body" x="1174" y="215">选择现有异常或建立无异常来源的经营任务</text>
+  <text class="small" x="1174" y="240">必须指定监控指标、恢复规则和复盘日期</text>
+  <path class="arrow" d="M450 208H590"/><path class="arrow" d="M995 208H1135"/>
+
+  <text class="h2" x="60" y="310">核心模块与数据关系</text>
+  <rect class="card" x="60" y="335" width="330" height="360" rx="14"/>
+  <text class="h2" x="84" y="372">行动工单</text>
+  <text class="label" x="84" y="405">执行信息</text>
+  <text class="body" x="84" y="432">标题｜行动内容｜来源：规则 / AI / 手动</text>
+  <text class="body" x="84" y="457">优先级｜执行成本｜截止日期｜复盘日期</text>
+  <line x1="84" y1="478" x2="366" y2="478" stroke="#e1e6ee"/>
+  <text class="label" x="84" y="510">执行状态（商家行为）</text>
+  <text class="body" x="84" y="537">待处理 → 进行中 → 已执行 → 已关闭</text>
+  <line x1="84" y1="558" x2="366" y2="558" stroke="#e1e6ee"/>
+  <text class="label" x="84" y="590">监控状态（数据判断）</text>
+  <text class="body" x="84" y="617">未开始｜监控中｜改善中｜已恢复</text>
+  <text class="body" x="84" y="642">未恢复｜数据不足</text>
+  <text class="small" x="84" y="674">已执行 ≠ 已解决，两组状态必须分离</text>
+
+  <rect class="blue" x="430" y="335" width="360" height="360" rx="14"/>
+  <text class="h2" x="454" y="372">冻结异常快照与监控计划</text>
+  <text class="label" x="454" y="405">异常快照（创建后不可改）</text>
+  <text class="body" x="454" y="432">findingId｜规则编码｜异常标题｜关联 SKU</text>
+  <text class="body" x="454" y="457">数据周期｜当前值｜基线值｜触发阈值｜证据</text>
+  <line x1="454" y1="478" x2="766" y2="478" stroke="#cddaff"/>
+  <text class="label" x="454" y="510">监控计划</text>
+  <text class="body" x="454" y="537">主指标｜改善方向｜恢复规则｜观察窗口</text>
+  <text class="body" x="454" y="562">执行日期｜复盘日期｜辅助指标</text>
+  <line x1="454" y1="583" x2="766" y2="583" stroke="#cddaff"/>
+  <text class="label" x="454" y="615">数据隔离</text>
+  <text class="body" x="454" y="642">dataScopeKey = 店铺 + 数据来源指纹</text>
+  <text class="small" x="454" y="674">防止不同 CSV / 演示场景之间串单</text>
+
+  <rect class="green" x="830" y="335" width="390" height="360" rx="14"/>
+  <text class="h2" x="854" y="372">确定性监控引擎</text>
+  <text class="label" x="854" y="405">输入</text>
+  <text class="body" x="854" y="432">同一数据范围更新后的聚合指标</text>
+  <text class="body" x="854" y="457">工单保存的监控指标、范围和恢复规则</text>
+  <line x1="854" y1="478" x2="1196" y2="478" stroke="#cde8dc"/>
+  <text class="label" x="854" y="510">判断顺序</text>
+  <text class="body" x="854" y="537">1. 是否有行动后完整 7 个自然日</text>
+  <text class="body" x="854" y="562">2. 当前指标相对创建时是否改善</text>
+  <text class="body" x="854" y="587">3. 原规则是否仍然触发</text>
+  <line x1="854" y1="608" x2="1196" y2="608" stroke="#cde8dc"/>
+  <text class="label" x="854" y="640">输出</text>
+  <text class="body" x="854" y="667">状态＋当前值＋变化量＋判定证据＋时间</text>
+
+  <rect class="purple" x="1260" y="335" width="280" height="360" rx="14"/>
+  <text class="h2" x="1284" y="372">反馈与复盘</text>
+  <text class="label" x="1284" y="405">写回工单</text>
+  <text class="body" x="1284" y="432">更新监控状态</text>
+  <text class="body" x="1284" y="457">记录指标前后变化</text>
+  <text class="body" x="1284" y="482">追加监控时间线</text>
+  <line x1="1284" y1="505" x2="1516" y2="505" stroke="#ded5ff"/>
+  <text class="label" x="1284" y="537">AI 辅助</text>
+  <text class="body" x="1284" y="564">解释是否恢复</text>
+  <text class="body" x="1284" y="589">总结可能原因</text>
+  <text class="body" x="1284" y="614">给出下一周期建议</text>
+  <text class="small" x="1284" y="652">AI 不可修改监控状态</text>
+  <text class="small" x="1284" y="674">关闭工单由用户最终确认</text>
+  <path class="arrow" d="M390 515H415"/><path class="arrow" d="M790 515H815"/><path class="arrow" d="M1220 515H1245"/>
+
+  <text class="h2" x="60" y="755">核心闭环</text>
+  <rect class="card" x="60" y="780" width="215" height="90" rx="12"/><text class="h3" x="82" y="814">1. 创建工单</text><text class="small" x="82" y="842">冻结异常事实与监控口径</text>
+  <rect class="blue" x="315" y="780" width="215" height="90" rx="12"/><text class="h3" x="337" y="814">2. 执行动作</text><text class="small" x="337" y="842">记录实际行动和执行日期</text>
+  <rect class="muted" x="570" y="780" width="215" height="90" rx="12"/><text class="h3" x="592" y="814">3. 等待数据</text><text class="small" x="592" y="842">形成完整行动后观察窗口</text>
+  <rect class="green" x="825" y="780" width="215" height="90" rx="12"/><text class="h3" x="847" y="814">4. 自动判断</text><text class="small" x="847" y="842">恢复 / 改善 / 未恢复 / 不足</text>
+  <rect class="purple" x="1080" y="780" width="215" height="90" rx="12"/><text class="h3" x="1102" y="814">5. AI 复盘</text><text class="small" x="1102" y="842">解释变化并给下一步建议</text>
+  <rect class="card" x="1335" y="780" width="205" height="90" rx="12"/><text class="h3" x="1357" y="814">6. 确认关闭</text><text class="small" x="1357" y="842">用户确认解决或继续行动</text>
+  <path class="flow" d="M275 825H300"/><path class="flow" d="M530 825H555"/><path class="flow" d="M785 825H810"/><path class="flow" d="M1040 825H1065"/><path class="flow" d="M1295 825H1320"/>
+
+  <rect class="muted" x="60" y="910" width="1480" height="90" rx="12"/>
+  <text class="h3" x="84" y="944">首版判定与边界</text>
+  <text class="body" x="84" y="972">完整 7 日窗口才判断恢复｜Finding 消失后仍按冻结口径监控｜不因单日波动自动关单｜规则负责事实状态，AI 只做解释｜localStorage 保存工单与时间线</text>
+</svg>
