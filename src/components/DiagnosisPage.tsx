@@ -37,6 +37,7 @@ export function DiagnosisPage({
   onScenarioChange,
   onBack,
   onExplain,
+  onCreateAction,
 }: {
   snapshot: DashboardSnapshot
   initialFindingId?: string
@@ -46,6 +47,7 @@ export function DiagnosisPage({
   onScenarioChange: (id: string) => void
   onBack: () => void
   onExplain: (finding: DiagnosisFinding) => void
+  onCreateAction: (finding: DiagnosisFinding) => void
 }) {
   const [selectedId, setSelectedId] = useState(initialFindingId ?? snapshot.findings[0]?.id ?? '')
   const [listOpen, setListOpen] = useState(false)
@@ -229,7 +231,7 @@ export function DiagnosisPage({
                   <header><div><h3>规则建议</h3><p>可以先执行的低风险动作</p></div><ListTodo size={17} /></header>
                   <strong>{selected.ruleSuggestion}</strong>
                   <p><b>验证方法：</b>{selected.verification}</p>
-                  <button className="button button-disabled" type="button" disabled><ListTodo size={15} />下一阶段：创建行动工单</button>
+                  <button className="button button-primary" type="button" onClick={() => onCreateAction(selected)}><ListTodo size={15} />创建行动工单</button>
                 </article>
               </section>
 

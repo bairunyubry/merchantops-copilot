@@ -20,6 +20,7 @@ import {
   X,
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
+import { ActionCenterPage } from './components/ActionCenterPage'
 import { DiagnosisPage } from './components/DiagnosisPage'
 import { TrendChart } from './components/TrendChart'
 import { parseMerchantCsv, type CsvImportResult } from './lib/csv'
@@ -183,10 +184,12 @@ function QualityModal({ result, onClose }: { result: CsvImportResult; onClose: (
 function AiDrawer({
   finding,
   initialQuestion,
+  onCreateAction,
   onClose,
 }: {
   finding: PrimaryFinding
   initialQuestion?: string
+  onCreateAction: (finding: PrimaryFinding) => void
   onClose: () => void
 }) {
   const presets = ['今天有什么经营问题？', 'GMV 为什么下降？', '我应该先处理什么？', '哪些 SKU 需要关注？']
@@ -234,7 +237,7 @@ function AiDrawer({
               <section><h3>建议先做</h3><p>{answer.action}</p></section>
               <section><h3>验证方法</h3><p>{answer.verification}</p></section>
               <div className="caveat"><Info size={15} /><span>{answer.caveat}</span></div>
-              <button className="button button-disabled" type="button" disabled><ListTodo size={15} />下一阶段：采纳为行动工单</button>
+              <button className="button button-primary" type="button" onClick={() => onCreateAction(finding)}><ListTodo size={15} />采纳为行动工单</button>
             </article>
           ) : (
             <div className="ai-empty"><Bot size={28} /><strong>从一个经营问题开始</strong><p>回答将引用当前看板证据，并说明验证方法和不确定性。</p></div>
@@ -261,9 +264,12 @@ export default function App() {
   const [aiOpen, setAiOpen] = useState(false)
   const [aiQuestion, setAiQuestion] = useState<string | undefined>()
   const [aiFinding, setAiFinding] = useState<PrimaryFinding | null>(null)
-  const [route, setRoute] = useState<'overview' | 'diagnosis'>(() =>
-    window.location.pathname.startsWith('/diagnosis') ? 'diagnosis' : 'overview',
-  )
+  const routeForPath = (path: string): 'overview' | 'diagnosis' | 'actions' => {
+    if (path.startsWith('/diagnosis')) return 'diagnosis'
+    if (path.startsWith('/actions')) return 'actions'
+    return 'overview'
+  }
+  const [route, setRoute] = useState<'overview' | 'diagnosis' | 'actions'>(() => routeForPath(window.location.pathname))
   const [trendMetric, setTrendMetric] = useState<TrendMetric>('netRevenue')
   const [notice, setNotice] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -294,7 +300,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    const handlePopState = () => setRoute(window.location.pathname.startsWith('/diagnosis') ? 'diagnosis' : 'overview')
+    const handlePopState = () => setRoute(routeForPath(window.location.pathname))
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
@@ -331,7 +337,7 @@ export default function App() {
 
   const navigate = (path: string) => {
     window.history.pushState({}, '', path)
-    setRoute(path.startsWith('/diagnosis') ? 'diagnosis' : 'overview')
+    setRoute(routeForPath(path))
     window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
@@ -365,6 +371,10 @@ export default function App() {
   const currentScenarioName = selectedScenario === 'custom'
     ? customFileName
     : SCENARIOS.find((item) => item.id === selectedScenario)?.name
+  const scopeKey = selectedScenario === 'custom'
+    ? `custom:${customFileName}:${snapshot.dateRange.from}:${snapshot.dateRange.to}:${snapshot.rowCount}`
+    : `scenario:${selectedScenario}`
+  const searchParams = new URLSearchParams(window.location.search)
 
   return (
     <div className="app-shell">
@@ -373,7 +383,7 @@ export default function App() {
         <nav aria-label="产品导航">
           <button className={`nav-item ${route === 'overview' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/')}><LayoutDashboard size={17} />经营总览</button>
           <button className={`nav-item ${route === 'diagnosis' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/diagnosis')}><TriangleAlert size={17} />异常诊断{snapshot.findings.length > 0 && <span>{snapshot.findings.length}</span>}</button>
-          <button className="nav-item" type="button" disabled><ListTodo size={17} />行动工单<span>下一阶段</span></button>
+          <button className={`nav-item ${route === 'actions' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/actions')}><ListTodo size={17} />行动工单</button>
           <button className="nav-item" type="button" disabled><ClipboardCheck size={17} />周度复盘<span>下一阶段</span></button>
         </nav>
         <div className="sidebar-foot"><Database size={14} /><span>上传数据仅在浏览器本地解析</span></div>
@@ -383,13 +393,27 @@ export default function App() {
         {route === 'diagnosis' ? (
           <DiagnosisPage
             snapshot={snapshot}
-            initialFindingId={new URLSearchParams(window.location.search).get('finding') ?? undefined}
+            initialFindingId={searchParams.get('finding') ?? undefined}
             sourceName={selectedScenario === 'custom' ? `上传：${customFileName}` : `演示场景：${currentScenarioName}`}
             scenarios={SCENARIOS}
             selectedScenario={selectedScenario}
             onScenarioChange={(id) => void loadScenario(id)}
             onBack={() => navigate('/')}
             onExplain={(target: DiagnosisFinding) => openAi('请解释这个经营异常，并告诉我应该先做什么。', target)}
+            onCreateAction={(target: DiagnosisFinding) => navigate(`/actions?create=1&finding=${encodeURIComponent(target.id)}&source=rule`)}
+          />
+        ) : route === 'actions' ? (
+          <ActionCenterPage
+            snapshot={snapshot}
+            rows={rows}
+            scopeKey={scopeKey}
+            sourceName={selectedScenario === 'custom' ? `上传：${customFileName}` : `演示场景：${currentScenarioName}`}
+            scenarios={SCENARIOS}
+            selectedScenario={selectedScenario}
+            initialFindingId={searchParams.get('finding') ?? undefined}
+            initialSource={searchParams.get('source') === 'ai' ? 'ai' : 'rule'}
+            onScenarioChange={(id) => void loadScenario(id)}
+            onGoDiagnosis={() => navigate('/diagnosis')}
           />
         ) : (
         <>
@@ -467,7 +491,7 @@ export default function App() {
       </div>
 
       {qualityOpen && importResult && <QualityModal result={importResult} onClose={() => setQualityOpen(false)} />}
-      {aiOpen && aiFinding && <AiDrawer key={`${selectedScenario}-${aiFinding.id}-${aiQuestion ?? 'empty'}`} finding={aiFinding} initialQuestion={aiQuestion} onClose={() => setAiOpen(false)} />}
+      {aiOpen && aiFinding && <AiDrawer key={`${selectedScenario}-${aiFinding.id}-${aiQuestion ?? 'empty'}`} finding={aiFinding} initialQuestion={aiQuestion} onClose={() => setAiOpen(false)} onCreateAction={(target) => { setAiOpen(false); navigate(`/actions?create=1&finding=${encodeURIComponent(target.id)}&source=ai`) }} />}
       {notice && <div className="toast" role="status"><CheckCircle2 size={16} />{notice}</div>}
     </div>
   )
