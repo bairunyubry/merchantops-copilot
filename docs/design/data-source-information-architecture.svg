@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1220" viewBox="0 0 1600 1220">
+  <defs>
+    <style>
+      .bg{fill:#f2f5f9}.card{fill:#fff;stroke:#bcc7d8;stroke-width:2}.primary{fill:#eef4ff;stroke:#5d7fe0;stroke-width:2}.system{fill:#eff9f4;stroke:#58a47d;stroke-width:2}.future{fill:#f7f9fc;stroke:#aeb9ca;stroke-width:2;stroke-dasharray:7 5}.warn{fill:#fff8e8;stroke:#d4a344;stroke-width:2}.risk{fill:#fff4f4;stroke:#df7777;stroke-width:2}.ai{fill:#f6f1ff;stroke:#8a70df;stroke-width:2}.title{font:700 32px 'Microsoft YaHei',sans-serif;fill:#10213b}.h2{font:700 20px 'Microsoft YaHei',sans-serif;fill:#13223a}.h3{font:700 16px 'Microsoft YaHei',sans-serif;fill:#17243a}.body{font:13px 'Microsoft YaHei',sans-serif;fill:#53627a}.small{font:12px 'Microsoft YaHei',sans-serif;fill:#718098}.label{font:700 11px 'Microsoft YaHei',sans-serif;fill:#365dcb}.sysLabel{font:700 11px 'Microsoft YaHei',sans-serif;fill:#327457}.futureLabel{font:700 11px 'Microsoft YaHei',sans-serif;fill:#68778c}.warnLabel{font:700 11px 'Microsoft YaHei',sans-serif;fill:#94671e}.arrow{stroke:#7f8da3;stroke-width:2;fill:none;marker-end:url(#arrow)}.flow{stroke:#5075d6;stroke-width:3;fill:none;marker-end:url(#blueArrow)}.dash{stroke:#8d98a9;stroke-width:2;stroke-dasharray:7 6;fill:none;marker-end:url(#arrow)}
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#7f8da3"/></marker>
+    <marker id="blueArrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#5075d6"/></marker>
+  </defs>
+
+  <rect class="bg" width="1600" height="1220"/>
+  <text class="title" x="60" y="58">数据源管理与同步机制｜信息架构 v0.1</text>
+  <text class="body" x="60" y="88">页面任务：让商家知道数据从哪里来、更新到什么时候、是否可信；新数据到达后自动重算诊断并反馈到关联工单。</text>
+
+  <text class="h2" x="60" y="132">一、经营总览内的数据接入结构（不新增独立页面）</text>
+  <rect class="primary" x="60" y="154" width="1480" height="112" rx="14"/>
+  <text class="label" x="84" y="181">全局数据状态条</text>
+  <text class="h3" x="84" y="210">当前数据源：青柚研究所 · 模拟在线 CSV</text>
+  <text class="body" x="84" y="238">同步正常｜数据更新至 2026-08-31 16:00｜下次同步 16:30｜30 天 · 360 行｜数据完整度 98%</text>
+  <text class="body" x="1250" y="210">[立即同步]　[数据接入]</text>
+
+  <rect class="card" x="60" y="294" width="350" height="244" rx="14"/>
+  <text class="h3" x="84" y="326">① 顶部“数据接入”入口</text>
+  <text class="body" x="84" y="360">位于经营总览原数据导入区域</text>
+  <text class="body" x="84" y="388">点击后打开接入弹窗</text>
+  <text class="body" x="84" y="416">不增加侧边导航和独立页面</text>
+  <text class="body" x="84" y="444">同步中显示加载状态</text>
+  <text class="body" x="84" y="472">失败后保留当前看板</text>
+  <text class="small" x="84" y="510">按钮旁展示来源与最近更新时间</text>
+
+  <rect class="card" x="450" y="294" width="350" height="244" rx="14"/>
+  <text class="h3" x="474" y="326">② 数据接入弹窗</text>
+  <text class="body" x="474" y="360">默认示例｜本地 CSV｜在线 CSV</text>
+  <text class="body" x="474" y="388">在线 CSV：粘贴公开 HTTPS 链接</text>
+  <text class="body" x="474" y="416">测试连接并读取前 20 行</text>
+  <text class="body" x="474" y="444">复用标准字段自动校验</text>
+  <text class="body" x="474" y="472">手动同步 / 模拟 30 分钟同步</text>
+  <text class="small" x="474" y="510">本轮不展示飞书与 Hive 配置入口</text>
+
+  <rect class="card" x="840" y="294" width="330" height="244" rx="14"/>
+  <text class="h3" x="864" y="326">③ 弹窗内质量预览</text>
+  <text class="body" x="864" y="360">有效行 / 跳过行 / 缺失字段</text>
+  <text class="body" x="864" y="388">重复主键与 SKU 名称冲突</text>
+  <text class="body" x="864" y="416">本次新增、覆盖、未变化行数</text>
+  <text class="body" x="864" y="444">当前生效数据版本</text>
+  <text class="body" x="864" y="472">查看最近成功快照</text>
+  <text class="small" x="864" y="510">失败版本不进入经营计算</text>
+
+  <rect class="card" x="1210" y="294" width="330" height="244" rx="14"/>
+  <text class="h3" x="1234" y="326">④ 总览内同步反馈</text>
+  <text class="body" x="1234" y="360">开始时间与完成时间</text>
+  <text class="body" x="1234" y="388">成功 / 部分成功 / 失败</text>
+  <text class="body" x="1234" y="416">HTTP、解析、字段错误原因</text>
+  <text class="body" x="1234" y="444">重试与恢复到上次成功版本</text>
+  <text class="body" x="1234" y="472">同步后影响的异常与工单</text>
+  <text class="small" x="1234" y="510">Toast＋状态条，不新增历史页面</text>
+  <path class="flow" d="M410 416H435"/><path class="flow" d="M800 416H825"/><path class="flow" d="M1170 416H1195"/>
+
+  <text class="h2" x="60" y="588">二、保存数据源时的用户流程</text>
+  <rect class="primary" x="60" y="614" width="210" height="84" rx="12"/><text class="h3" x="82" y="648">1. 粘贴数据链接</text><text class="small" x="82" y="674">只接受 HTTPS</text>
+  <rect class="primary" x="310" y="614" width="210" height="84" rx="12"/><text class="h3" x="332" y="648">2. 测试连接</text><text class="small" x="332" y="674">返回状态与样例行</text>
+  <rect class="primary" x="560" y="614" width="210" height="84" rx="12"/><text class="h3" x="582" y="648">3. 确认字段映射</text><text class="small" x="582" y="674">映射到标准 14 字段</text>
+  <rect class="primary" x="810" y="614" width="210" height="84" rx="12"/><text class="h3" x="832" y="648">4. 查看质量预览</text><text class="small" x="832" y="674">阻断错误不可保存</text>
+  <rect class="primary" x="1060" y="614" width="210" height="84" rx="12"/><text class="h3" x="1082" y="648">5. 设置同步规则</text><text class="small" x="1082" y="674">MVP：手动 / 30 分钟</text>
+  <rect class="system" x="1310" y="614" width="230" height="84" rx="12"/><text class="h3" x="1332" y="648">6. 首次同步并生效</text><text class="small" x="1332" y="674">生成不可变数据版本</text>
+  <path class="arrow" d="M270 656H295"/><path class="arrow" d="M520 656H545"/><path class="arrow" d="M770 656H795"/><path class="arrow" d="M1020 656H1045"/><path class="arrow" d="M1270 656H1295"/>
+
+  <text class="h2" x="60" y="754">三、后台同步与经营闭环</text>
+  <rect class="warn" x="60" y="780" width="220" height="112" rx="12"/>
+  <text class="warnLabel" x="82" y="807">连接器</text><text class="h3" x="82" y="837">服务端拉取 CSV</text><text class="body" x="82" y="864">超时、大小、域名检查</text>
+  <rect class="system" x="330" y="780" width="220" height="112" rx="12"/>
+  <text class="sysLabel" x="352" y="807">标准化</text><text class="h3" x="352" y="837">解析与字段校验</text><text class="body" x="352" y="864">复用现有 CSV 规则</text>
+  <rect class="system" x="600" y="780" width="220" height="112" rx="12"/>
+  <text class="sysLabel" x="622" y="807">数据版本</text><text class="h3" x="622" y="837">去重 / 合并 / 快照</text><text class="body" x="622" y="864">date + sku_id 主键</text>
+  <rect class="system" x="870" y="780" width="220" height="112" rx="12"/>
+  <text class="sysLabel" x="892" y="807">规则事实层</text><text class="h3" x="892" y="837">聚合与异常重算</text><text class="body" x="892" y="864">指标、Finding、优先级</text>
+  <rect class="system" x="1140" y="780" width="220" height="112" rx="12"/>
+  <text class="sysLabel" x="1162" y="807">闭环回写</text><text class="h3" x="1162" y="837">工单与复盘更新</text><text class="body" x="1162" y="864">恢复 / 改善 / 未恢复</text>
+  <rect class="ai" x="1410" y="780" width="130" height="112" rx="12"/>
+  <text class="h3" x="1432" y="826">AI 上下文</text><text class="small" x="1432" y="854">只读取最新</text><text class="small" x="1432" y="874">聚合事实</text>
+  <path class="flow" d="M280 836H315"/><path class="flow" d="M550 836H585"/><path class="flow" d="M820 836H855"/><path class="flow" d="M1090 836H1125"/><path class="flow" d="M1360 836H1395"/>
+
+  <rect class="risk" x="330" y="926" width="760" height="80" rx="12"/>
+  <text class="h3" x="354" y="958">任一步失败：记录失败原因，不发布新版本，不覆盖上次成功数据</text>
+  <text class="body" x="354" y="984">页面继续展示上次可用看板，并提示“同步失败，数据更新至 ……”</text>
+  <path class="dash" d="M980 892V912H710V921"/>
+
+  <text class="h2" x="60" y="1060">四、MVP 与后续边界</text>
+  <rect class="primary" x="60" y="1084" width="700" height="92" rx="12"/>
+  <text class="label" x="84" y="1112">本轮真实实现</text>
+  <text class="body" x="84" y="1141">公开在线 CSV｜手动刷新｜模拟 30 分钟自动同步｜全量快照覆盖｜localStorage 保存连接与版本</text>
+  <text class="small" x="84" y="1164">提供可控 v1→v4 数据流：正常 → 异常出现 → 行动后改善 → 指标恢复</text>
+  <rect class="future" x="800" y="1084" width="740" height="92" rx="12"/>
+  <text class="futureLabel" x="824" y="1112">后续连接器，不出现在本轮可操作界面</text>
+  <text class="body" x="824" y="1141">飞书授权与表格 Token｜Hive 网络、Kerberos 与凭据托管｜服务端定时任务｜数据库版本存储</text>
+  <text class="small" x="824" y="1164">连接器接入后仍复用同一标准数据、规则诊断、工单监控和 AI 上下文</text>
+</svg>

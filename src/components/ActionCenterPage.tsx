@@ -232,7 +232,7 @@ export function ActionCenterPage({
   const currentOrders = useMemo(() => allOrders.filter((order) => order.scopeKey === scopeKey), [allOrders, scopeKey])
 
   useEffect(() => {
-    if (currentOrders.length > 0 || snapshot.findings.length === 0 || selectedScenario === 'custom') return
+    if (currentOrders.length > 0 || snapshot.findings.length === 0 || ['custom', 'online'].includes(selectedScenario)) return
     const seeded = buildDemoWorkOrders(snapshot, scopeKey)
     const next = [...allOrders, ...seeded]
     setAllOrders(next)
@@ -297,7 +297,7 @@ export function ActionCenterPage({
       <header className="topbar action-topbar">
         <div className="page-title"><h1>行动工单</h1><p>青柚研究所 · 数据截止 {snapshot.latestCompleteDate} · {sourceName}</p></div>
         <div className="top-actions">
-          <label className="select-control"><span className="sr-only">切换行动中心数据范围</span><select value={selectedScenario} onChange={(event) => event.target.value !== 'custom' && onScenarioChange(event.target.value)}>{selectedScenario === 'custom' && <option value="custom">当前上传数据</option>}<optgroup label="复杂多异常验收">{scenarios.filter((scenario) => scenario.group === 'complex').map((scenario) => <option value={scenario.id} key={scenario.id}>{scenario.name}</option>)}</optgroup><optgroup label="单异常基础样例">{scenarios.filter((scenario) => scenario.group === 'single').map((scenario) => <option value={scenario.id} key={scenario.id}>{scenario.name}</option>)}</optgroup></select></label>
+          <label className="select-control"><span className="sr-only">切换行动中心数据范围</span><select value={selectedScenario} onChange={(event) => !['custom', 'online'].includes(event.target.value) && onScenarioChange(event.target.value)}>{selectedScenario === 'custom' && <option value="custom">当前上传数据</option>}{selectedScenario === 'online' && <option value="online">当前在线数据</option>}<optgroup label="复杂多异常验收">{scenarios.filter((scenario) => scenario.group === 'complex').map((scenario) => <option value={scenario.id} key={scenario.id}>{scenario.name}</option>)}</optgroup><optgroup label="单异常基础样例">{scenarios.filter((scenario) => scenario.group === 'single').map((scenario) => <option value={scenario.id} key={scenario.id}>{scenario.name}</option>)}</optgroup></select></label>
           <button className="button button-primary" type="button" disabled={snapshot.findings.length === 0} onClick={() => setCreateOpen(true)}><Plus size={15} />创建工单</button>
         </div>
       </header>

@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1240" viewBox="0 0 1600 1240">
+  <defs>
+    <style>
+      .bg{fill:#edf1f6}.panel{fill:#fff;stroke:#aeb9c8;stroke-width:2}.soft{fill:#f7f9fc;stroke:#c7cfda;stroke-width:2}.active{fill:#eef3ff;stroke:#5878d9;stroke-width:2}.success{fill:#edf8f2;stroke:#4f9a73;stroke-width:2}.danger{fill:#fff3f3;stroke:#d56868;stroke-width:2}.disabled{fill:#eef1f5;stroke:#c8ced7;stroke-width:2}.overlay{fill:#172033;opacity:.34}.line{stroke:#77859a;stroke-width:2;fill:none}.dash{stroke:#97a3b5;stroke-width:2;stroke-dasharray:6 5;fill:none}.arrow{stroke:#65758c;stroke-width:2;fill:none;marker-end:url(#arrow)}.title{font:700 30px 'Microsoft YaHei',sans-serif;fill:#152238}.h2{font:700 20px 'Microsoft YaHei',sans-serif;fill:#17243a}.h3{font:700 15px 'Microsoft YaHei',sans-serif;fill:#1d293d}.body{font:13px 'Microsoft YaHei',sans-serif;fill:#536078}.small{font:12px 'Microsoft YaHei',sans-serif;fill:#758196}.tiny{font:11px 'Microsoft YaHei',sans-serif;fill:#8792a3}.buttonText{font:700 13px 'Microsoft YaHei',sans-serif;fill:#fff}.darkButton{fill:#314f9e}.ghostButton{fill:#fff;stroke:#9eabba;stroke-width:1.5}.ghostText{font:700 13px 'Microsoft YaHei',sans-serif;fill:#41516b}.num{font:700 22px 'Microsoft YaHei',sans-serif;fill:#1a263b}
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#65758c"/></marker>
+  </defs>
+  <rect class="bg" width="1600" height="1240"/>
+  <text class="title" x="54" y="52">公开在线 CSV 数据接入｜低保真线框图 v0.1</text>
+  <text class="body" x="54" y="80">MVP：经营总览内完成接入；默认示例、本地 CSV、公开在线 CSV 共用一个入口；成功才发布新数据版本。</text>
+
+  <!-- State 1 -->
+  <text class="h2" x="54" y="124">状态 1｜经营总览入口</text>
+  <rect class="panel" x="54" y="144" width="1492" height="238" rx="14"/>
+  <rect fill="#18233a" x="54" y="144" width="150" height="238" rx="14"/>
+  <text class="buttonText" x="79" y="181">商家经营罗盘</text>
+  <text class="small" x="79" y="226" fill="#dbe3f2">经营总览</text>
+  <text class="small" x="79" y="256" fill="#9dabc0">异常诊断</text>
+  <text class="small" x="79" y="286" fill="#9dabc0">行动中心</text>
+  <text class="small" x="79" y="316" fill="#9dabc0">周度复盘</text>
+  <text class="h2" x="230" y="181">青柚研究所 · 经营总览</text>
+  <text class="small" x="230" y="205">最近 30 天｜示例行业：美妆个护</text>
+  <rect class="ghostButton" x="1192" y="164" width="92" height="34" rx="7"/><text class="ghostText" x="1214" y="186">下载模板</text>
+  <rect class="darkButton" x="1296" y="164" width="104" height="34" rx="7"/><text class="buttonText" x="1318" y="186">数据接入</text>
+  <rect class="ghostButton" x="1412" y="164" width="104" height="34" rx="7"/><text class="ghostText" x="1434" y="186">重置示例</text>
+  <rect class="active" x="230" y="222" width="1286" height="54" rx="9"/>
+  <circle cx="252" cy="249" r="6" fill="#4f9a73"/>
+  <text class="h3" x="270" y="246">当前：默认示例数据</text><text class="small" x="270" y="266">数据更新至 2026-08-31｜30 天 · 360 行</text>
+  <text class="body" x="1240" y="254">无需同步　›</text>
+  <rect class="soft" x="230" y="294" width="200" height="66" rx="8"/><text class="small" x="246" y="316">GMV</text><text class="num" x="246" y="346">¥128,420</text>
+  <rect class="soft" x="445" y="294" width="200" height="66" rx="8"/><text class="small" x="461" y="316">净收入</text><text class="num" x="461" y="346">¥115,606</text>
+  <rect class="soft" x="660" y="294" width="200" height="66" rx="8"/><text class="small" x="676" y="316">退款率</text><text class="num" x="676" y="346">10.0%</text>
+  <rect class="soft" x="875" y="294" width="200" height="66" rx="8"/><text class="small" x="891" y="316">48h 发货率</text><text class="num" x="891" y="346">86.2%</text>
+  <text class="tiny" x="1180" y="341">点击“数据接入”打开弹窗</text><path class="arrow" d="M1288 328C1320 310 1347 258 1347 207"/>
+
+  <!-- State 2 -->
+  <text class="h2" x="54" y="430">状态 2｜接入弹窗：选择方式</text>
+  <rect class="panel" x="54" y="450" width="730" height="330" rx="14"/>
+  <text class="h2" x="82" y="488">数据接入</text><text class="body" x="82" y="514">选择本次经营数据的来源</text><text class="h2" x="744" y="488">×</text>
+  <rect class="soft" x="82" y="548" width="206" height="142" rx="10"/>
+  <text class="h3" x="104" y="580">默认示例</text><text class="body" x="104" y="608">恢复青柚研究所</text><text class="body" x="104" y="632">30 天演示数据</text><text class="small" x="104" y="668">无需配置</text>
+  <rect class="soft" x="307" y="548" width="206" height="142" rx="10"/>
+  <text class="h3" x="329" y="580">本地 CSV</text><text class="body" x="329" y="608">选择电脑中的文件</text><text class="body" x="329" y="632">上传后一次性生效</text><text class="small" x="329" y="668">沿用现有能力</text>
+  <rect class="active" x="532" y="548" width="224" height="142" rx="10"/>
+  <text class="h3" x="554" y="580">公开在线 CSV</text><text class="body" x="554" y="608">粘贴 HTTPS 链接</text><text class="body" x="554" y="632">支持刷新与模拟同步</text><text class="small" x="554" y="668">本轮新增</text>
+  <text class="small" x="82" y="730">字段要求：14 个标准字段；不上传订单个人信息</text>
+  <rect class="darkButton" x="644" y="718" width="112" height="38" rx="7"/><text class="buttonText" x="674" y="742">下一步</text>
+
+  <!-- State 3 -->
+  <text class="h2" x="822" y="430">状态 3｜填写链接并测试连接</text>
+  <rect class="panel" x="822" y="450" width="724" height="330" rx="14"/>
+  <text class="h2" x="850" y="488">接入公开在线 CSV</text><text class="h2" x="1506" y="488">×</text>
+  <text class="h3" x="850" y="530">数据链接</text>
+  <rect class="soft" x="850" y="544" width="528" height="42" rx="7"/><text class="body" x="866" y="570">https://demo.example.com/api/demo-live.csv</text>
+  <rect class="ghostButton" x="1390" y="544" width="128" height="42" rx="7"/><text class="ghostText" x="1419" y="570">测试连接</text>
+  <rect class="success" x="850" y="606" width="668" height="68" rx="8"/>
+  <text class="h3" x="872" y="633">✓ 连接成功</text><text class="small" x="872" y="656">HTTP 200｜CSV｜360 行｜数据截止 2026-08-31｜响应 482 ms</text>
+  <text class="h3" x="850" y="708">更新方式</text>
+  <circle cx="866" cy="739" r="8" fill="#5878d9"/><circle cx="866" cy="739" r="3" fill="#fff"/><text class="body" x="884" y="744">仅手动同步</text>
+  <circle cx="1018" cy="739" r="8" fill="#fff" stroke="#8e9aad" stroke-width="2"/><text class="body" x="1036" y="744">模拟每 30 分钟同步</text>
+  <rect class="ghostButton" x="1274" y="716" width="104" height="38" rx="7"/><text class="ghostText" x="1306" y="740">上一步</text>
+  <rect class="darkButton" x="1390" y="716" width="128" height="38" rx="7"/><text class="buttonText" x="1414" y="740">预览数据</text>
+
+  <!-- State 4 -->
+  <text class="h2" x="54" y="830">状态 4｜质量预览与生效确认</text>
+  <rect class="panel" x="54" y="850" width="1000" height="334" rx="14"/>
+  <text class="h2" x="82" y="888">数据预览</text><text class="body" x="82" y="914">只有通过阻断校验的数据才能替换当前看板</text><text class="h2" x="1014" y="888">×</text>
+  <rect class="success" x="82" y="940" width="200" height="68" rx="8"/><text class="small" x="98" y="963">有效数据</text><text class="num" x="98" y="991">360 行</text>
+  <rect class="soft" x="296" y="940" width="200" height="68" rx="8"/><text class="small" x="312" y="963">标准字段</text><text class="num" x="312" y="991">14 / 14</text>
+  <rect class="soft" x="510" y="940" width="200" height="68" rx="8"/><text class="small" x="526" y="963">覆盖周期</text><text class="num" x="526" y="991">30 天</text>
+  <rect class="soft" x="724" y="940" width="200" height="68" rx="8"/><text class="small" x="740" y="963">跳过数据</text><text class="num" x="740" y="991">0 行</text>
+  <rect class="soft" x="82" y="1028" width="842" height="72" rx="8"/>
+  <text class="h3" x="100" y="1054">将发布新数据版本：online-csv · v2</text>
+  <text class="body" x="100" y="1078">生效后自动更新经营看板、异常诊断、关联工单监控与周度复盘。</text>
+  <rect class="ghostButton" x="766" y="1122" width="82" height="38" rx="7"/><text class="ghostText" x="792" y="1146">取消</text>
+  <rect class="darkButton" x="860" y="1122" width="154" height="38" rx="7"/><text class="buttonText" x="888" y="1146">保存并同步</text>
+
+  <!-- feedback -->
+  <text class="h2" x="1092" y="830">状态 5｜同步反馈</text>
+  <rect class="panel" x="1092" y="850" width="454" height="334" rx="14"/>
+  <rect class="success" x="1118" y="878" width="402" height="88" rx="10"/>
+  <text class="h3" x="1140" y="909">✓ 同步成功，v2 已生效</text>
+  <text class="body" x="1140" y="934">发现 3 项异常，其中 1 项为高风险</text>
+  <text class="small" x="1140" y="954">[查看最高优先级异常]</text>
+  <rect class="danger" x="1118" y="990" width="402" height="116" rx="10"/>
+  <text class="h3" x="1140" y="1021">同步失败时</text>
+  <text class="body" x="1140" y="1047">链接超时 / 缺少 orders 字段</text>
+  <text class="body" x="1140" y="1071">继续使用 v1，看板不会被清空</text>
+  <text class="small" x="1140" y="1092">[重新测试]　[查看数据质量]</text>
+  <rect class="soft" x="1118" y="1128" width="402" height="34" rx="7"/>
+  <text class="small" x="1136" y="1150">数据更新至 16:00｜下次同步 16:30｜立即同步</text>
+
+  <text class="tiny" x="54" y="1215">交互约束：不通过校验不生效；同步过程不阻塞查看旧看板；模拟在线 CSV 必须始终标注为“模拟数据”。</text>
+</svg>

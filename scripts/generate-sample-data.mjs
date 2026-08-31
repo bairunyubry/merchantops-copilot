@@ -4,7 +4,9 @@ import { fileURLToPath } from 'node:url'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const scenarioDir = path.join(root, 'public', 'data', 'scenarios')
+const liveDir = path.join(root, 'public', 'data', 'live')
 fs.mkdirSync(scenarioDir, { recursive: true })
+fs.mkdirSync(liveDir, { recursive: true })
 
 const headers = [
   'date',
@@ -147,30 +149,38 @@ const round2 = (value) => Math.round(value * 100) / 100
 const countAtRate = (total, rate, salt) =>
   Math.min(total, Math.floor(total * rate + ((salt * 37) % 100) / 100))
 
-const formatDate = (index) => {
-  const date = new Date(Date.UTC(2026, 6, 31 + index))
+const formatDate = (index, offsetDays = 0) => {
+  const date = new Date(Date.UTC(2026, 6, 31 + index + offsetDays))
   return date.toISOString().slice(0, 10)
 }
 
 function createRow(scenario, dayIndex, skuIndex) {
   const sku = skus[skuIndex]
-  const effects = scenario.effects ?? {}
   const isCurrent = dayIndex >= 23
   const isBaseline = dayIndex >= 16 && dayIndex <= 22
+  const hasScopedEffects = scenario.currentEffects !== undefined || scenario.baselineEffects !== undefined
+  const effects = hasScopedEffects
+    ? isCurrent
+      ? (scenario.currentEffects ?? {})
+      : isBaseline
+        ? (scenario.baselineEffects ?? {})
+        : {}
+    : (scenario.effects ?? {})
+  const applyPeriodEffects = hasScopedEffects || isCurrent
   const dayFactor = 1 + ((dayIndex % 7) - 3) * 0.018
   const impressions = Math.round((930 + skuIndex * 62) * sku.demand * dayFactor)
   const ctr = 0.108 + ((skuIndex % 4) - 1.5) * 0.004
   const clicks = Math.max(1, Math.round(impressions * ctr))
 
   let cvr = 0.118 + ((skuIndex % 3) - 1) * 0.006
-  if (effects.conversionMultiplier && isCurrent) cvr *= effects.conversionMultiplier
+  if (effects.conversionMultiplier && applyPeriodEffects) cvr *= effects.conversionMultiplier
   const orders = Math.max(1, Math.round(clicks * cvr))
   const unitsSold = orders + Math.round(orders * (0.12 + (skuIndex % 2) * 0.05))
   const gmv = round2(unitsSold * sku.price * (0.965 + (dayIndex % 3) * 0.008))
 
   let refundRate = 0.032
-  if (effects.refundRate && isCurrent) refundRate = effects.refundRate
-  if (effects.concentratedRefundSku && isCurrent) {
+  if (effects.refundRate && applyPeriodEffects) refundRate = effects.refundRate
+  if (effects.concentratedRefundSku && applyPeriodEffects) {
     refundRate = sku.id === effects.concentratedRefundSku
       ? effects.concentratedRefundRate ?? 0.42
       : 0.038
@@ -183,17 +193,17 @@ function createRow(scenario, dayIndex, skuIndex) {
   let stock = 270 + skuIndex * 11 + (29 - dayIndex) * 2
   if (effects.lowStockSkus?.includes(sku.id)) {
     const targetIndex = effects.lowStockSkus.indexOf(sku.id)
-    stock = Math.max(4 + targetIndex * 3, Math.round(95 - Math.max(0, dayIndex - 13) * (6 + targetIndex)))
+    stock = Math.max(effects.stockFloor ?? 4 + targetIndex * 3, Math.round(95 - Math.max(0, dayIndex - 13) * (6 + targetIndex)))
   }
 
   const shippedOrders = Math.max(0, orders - ((dayIndex + skuIndex) % 2))
   let shipRate = 0.965
   let avgShipHours = 19 + ((dayIndex + skuIndex) % 7)
-  if (effects.shipRate && isCurrent) {
+  if (effects.shipRate && applyPeriodEffects) {
     shipRate = effects.shipRate
     avgShipHours = (effects.avgShipHours ?? 49) + ((dayIndex + skuIndex) % 10)
   }
-  if (effects.concentratedShipRate && isCurrent && sku.id === effects.concentratedRefundSku) {
+  if (effects.concentratedShipRate && applyPeriodEffects && sku.id === effects.concentratedRefundSku) {
     shipRate = effects.concentratedShipRate
     avgShipHours = 58 + (dayIndex % 7)
   }
@@ -204,7 +214,7 @@ function createRow(scenario, dayIndex, skuIndex) {
   )
 
   return {
-    date: formatDate(dayIndex),
+    date: formatDate(dayIndex, scenario.dateOffset ?? 0),
     sku_id: sku.id,
     sku_name: sku.name,
     impressions,
@@ -238,6 +248,86 @@ for (const scenario of scenarios) {
   }
   fs.writeFileSync(path.join(scenarioDir, scenario.file), toCsv(rows), 'utf8')
 }
+
+const liveAbnormal = {
+  conversionMultiplier: 0.58,
+  concentratedRefundSku: 'QY-CLEAN-001',
+  concentratedRefundRate: 0.46,
+  concentratedShipRate: 0.68,
+  shipRate: 0.74,
+  avgShipHours: 58,
+  lowStockSkus: ['QY-SUN-005', 'QY-CLEAN-001'],
+}
+
+const liveImproving = {
+  conversionMultiplier: 0.74,
+  concentratedRefundSku: 'QY-CLEAN-001',
+  concentratedRefundRate: 0.25,
+  concentratedShipRate: 0.84,
+  shipRate: 0.86,
+  avgShipHours: 37,
+  lowStockSkus: ['QY-SUN-005', 'QY-CLEAN-001'],
+  stockFloor: 70,
+}
+
+const liveVersions = [
+  {
+    version: 1,
+    name: '稳定基线',
+    description: '经营指标基本正常，用于建立首次连接后的规则基线。',
+    currentEffects: {},
+    baselineEffects: {},
+    expectedFindings: [],
+  },
+  {
+    version: 2,
+    name: '异常出现',
+    description: '洁面 SKU 退款集中，同时出现转化、履约和库存风险。',
+    currentEffects: liveAbnormal,
+    baselineEffects: {},
+    expectedFindings: ['conversion_drop', 'refund_spike', 'sku_concentration', 'fulfillment_delay', 'inventory_shortage'],
+  },
+  {
+    version: 3,
+    name: '行动后改善',
+    description: '最新 7 日指标相对异常期改善，但仍未全部达到恢复阈值。',
+    currentEffects: liveImproving,
+    baselineEffects: liveAbnormal,
+    expectedFindings: ['fulfillment_delay', 'inventory_shortage'],
+  },
+  {
+    version: 4,
+    name: '指标恢复',
+    description: '完整观察窗口内转化、退款、履约与库存均恢复到规则阈值内。',
+    currentEffects: {},
+    baselineEffects: liveImproving,
+    expectedFindings: [],
+  },
+]
+
+for (const stage of liveVersions) {
+  const rows = []
+  const scenario = { ...stage, dateOffset: (stage.version - 1) * 7 }
+  for (let dayIndex = 0; dayIndex < 30; dayIndex += 1) {
+    for (let skuIndex = 0; skuIndex < skus.length; skuIndex += 1) {
+      rows.push(createRow(scenario, dayIndex, skuIndex))
+    }
+  }
+  fs.writeFileSync(path.join(liveDir, `qingyou-live-v${stage.version}-30d.csv`), toCsv(rows), 'utf8')
+}
+
+fs.writeFileSync(path.join(liveDir, 'live-manifest.json'), `${JSON.stringify({
+  sourceId: 'qingyou-live',
+  sourceName: '青柚研究所 · 模拟在线 CSV',
+  syncMode: 'full_snapshot',
+  dataNotice: '合成经营数据，仅用于模拟公开在线 CSV 的准实时同步。',
+  versions: liveVersions.map(({ currentEffects, baselineEffects, ...stage }) => ({
+    ...stage,
+    file: `qingyou-live-v${stage.version}-30d.csv`,
+    latestCompleteDate: formatDate(29, (stage.version - 1) * 7),
+    rows: 30 * skus.length,
+  })),
+}, null, 2)}\n`, 'utf8')
 
 const templateRows = [
   {
@@ -280,4 +370,4 @@ fs.writeFileSync(
   'utf8',
 )
 
-console.log(`Generated ${scenarios.length} scenarios × 360 rows and 1 CSV template.`)
+console.log(`Generated ${scenarios.length} scenarios, ${liveVersions.length} live versions × 360 rows, and 1 CSV template.`)

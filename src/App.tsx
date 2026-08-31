@@ -21,10 +21,25 @@ import {
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { ActionCenterPage } from './components/ActionCenterPage'
+import { DataAccessModal } from './components/DataAccessModal'
 import { DiagnosisPage } from './components/DiagnosisPage'
 import { TrendChart } from './components/TrendChart'
 import { WeeklyReviewPage } from './components/WeeklyReviewPage'
 import { parseMerchantCsv, type CsvImportResult } from './lib/csv'
+import {
+  clearOnlineSource,
+  demoVersionFromUrl,
+  fetchOnlineCsv,
+  nextDemoVersion,
+  nextSyncTime,
+  readOnlineSource,
+  saveOnlineSource,
+  sourceIdForUrl,
+  withDemoVersion,
+  type OnlineCsvResult,
+  type OnlineSourceConfig,
+  type OnlineSyncMode,
+} from './lib/dataSource'
 import {
   buildDashboardSnapshot,
   type DiagnosisFinding,
@@ -74,6 +89,9 @@ const signedPercent = (value: number | null) =>
   value === null ? '—' : `${value >= 0 ? '+' : ''}${(value * 100).toFixed(1)}%`
 const signedPp = (value: number | null) =>
   value === null ? '—' : `${value >= 0 ? '+' : ''}${value.toFixed(2)}pp`
+const dateTime = (value: string | null) => value
+  ? new Intl.DateTimeFormat('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(value))
+  : '—'
 
 function ruleAnswerFor(finding: PrimaryFinding, question: string): RuleAnswer {
   const actions: Record<PrimaryFinding['code'], string> = {
@@ -262,6 +280,9 @@ export default function App() {
   const [loadError, setLoadError] = useState('')
   const [importResult, setImportResult] = useState<CsvImportResult | null>(null)
   const [qualityOpen, setQualityOpen] = useState(false)
+  const [dataAccessOpen, setDataAccessOpen] = useState(false)
+  const [onlineSource, setOnlineSource] = useState<OnlineSourceConfig | null>(() => readOnlineSource()?.config ?? null)
+  const [syncing, setSyncing] = useState(false)
   const [aiOpen, setAiOpen] = useState(false)
   const [aiQuestion, setAiQuestion] = useState<string | undefined>()
   const [aiFinding, setAiFinding] = useState<PrimaryFinding | null>(null)
@@ -289,6 +310,8 @@ export default function App() {
       setImportResult(result)
       setSelectedScenario(scenario.id)
       setCustomFileName('')
+      setOnlineSource(null)
+      clearOnlineSource()
       setNotice(`已切换为“${scenario.name}”演示数据`)
     } catch (error) {
       setLoadError(error instanceof Error ? error.message : '示例数据加载失败')
@@ -298,6 +321,16 @@ export default function App() {
   }
 
   useEffect(() => {
+    const stored = readOnlineSource()
+    if (stored) {
+      setRows(stored.rows)
+      setImportResult(stored.importResult)
+      setOnlineSource(stored.config)
+      setSelectedScenario('online')
+      setCustomFileName(stored.config.name)
+      setLoading(false)
+      return
+    }
     void loadScenario(DEFAULT_SCENARIO)
   }, [])
 
@@ -314,6 +347,65 @@ export default function App() {
   }, [notice])
 
   const snapshot = useMemo(() => (rows.length > 0 ? buildDashboardSnapshot(rows) : null), [rows])
+
+  const applyOnlineResult = (result: OnlineCsvResult, syncMode: OnlineSyncMode, previous?: OnlineSourceConfig | null) => {
+    const version = demoVersionFromUrl(result.requestedUrl)
+    const sourceId = previous?.sourceId ?? sourceIdForUrl(result.requestedUrl)
+    const name = version === null ? new URL(result.requestedUrl).hostname : '青柚研究所 · 模拟在线 CSV'
+    const config: OnlineSourceConfig = {
+      sourceId,
+      name,
+      url: result.requestedUrl,
+      syncMode,
+      version,
+      lastSyncedAt: result.meta.fetchedAt,
+      nextSyncAt: nextSyncTime(syncMode, new Date(result.meta.fetchedAt).getTime()),
+    }
+    setRows(result.importResult.rows)
+    setImportResult(result.importResult)
+    setSelectedScenario('online')
+    setCustomFileName(name)
+    setOnlineSource(config)
+    setLoadError('')
+    saveOnlineSource(config, result.importResult.rows, result.importResult)
+    const findingCount = buildDashboardSnapshot(result.importResult.rows).findings.length
+    setNotice(`在线数据${version ? ` v${version}` : ''}已生效，识别 ${findingCount} 项经营异常`)
+    if (result.importResult.issues.length > 0) setQualityOpen(true)
+  }
+
+  const syncOnline = async (advanceDemo = true, source = onlineSource) => {
+    if (!source || syncing) return
+    let requestUrl = source.url
+    const nextVersion = advanceDemo ? nextDemoVersion(source.url) : demoVersionFromUrl(source.url)
+    if (nextVersion !== null) requestUrl = withDemoVersion(source.url, nextVersion)
+    setSyncing(true)
+    setLoadError('')
+    try {
+      const result = await fetchOnlineCsv(requestUrl)
+      setImportResult(result.importResult)
+      if (result.importResult.blocked) {
+        setQualityOpen(true)
+        setLoadError('在线数据未通过校验')
+        return
+      }
+      applyOnlineResult(result, source.syncMode, source)
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : '在线数据同步失败')
+      setNotice('同步失败，继续使用上一次成功数据')
+    } finally {
+      setSyncing(false)
+    }
+  }
+
+  useEffect(() => {
+    if (!onlineSource || onlineSource.syncMode !== 'interval_30m' || !onlineSource.nextSyncAt) return
+    const check = () => {
+      if (Date.now() >= new Date(onlineSource.nextSyncAt ?? 0).getTime()) void syncOnline(true, onlineSource)
+    }
+    check()
+    const timer = window.setInterval(check, 30_000)
+    return () => window.clearInterval(timer)
+  }, [onlineSource, syncing])
 
   const handleImport = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -332,6 +424,8 @@ export default function App() {
     setRows(result.rows)
     setSelectedScenario('custom')
     setCustomFileName(file.name)
+    setOnlineSource(null)
+    clearOnlineSource()
     setLoadError('')
     setNotice(`已导入 ${file.name}，有效数据 ${result.rows.length} 行`)
     if (result.issues.length > 0) setQualityOpen(true)
@@ -370,12 +464,21 @@ export default function App() {
   const refundDelta = rateDelta(current.refundOrderRate, baseline.refundOrderRate)
   const shipDelta = rateDelta(current.ship48hRate, baseline.ship48hRate)
   const finding = snapshot.primaryFinding
-  const currentScenarioName = selectedScenario === 'custom'
-    ? customFileName
-    : SCENARIOS.find((item) => item.id === selectedScenario)?.name
-  const scopeKey = selectedScenario === 'custom'
-    ? `custom:${customFileName}:${snapshot.dateRange.from}:${snapshot.dateRange.to}:${snapshot.rowCount}`
-    : `scenario:${selectedScenario}`
+  const currentScenarioName = selectedScenario === 'online'
+    ? `${onlineSource?.name ?? customFileName}${onlineSource?.version ? ` · v${onlineSource.version}` : ''}`
+    : selectedScenario === 'custom'
+      ? customFileName
+      : SCENARIOS.find((item) => item.id === selectedScenario)?.name
+  const sourceName = selectedScenario === 'online'
+    ? `在线：${currentScenarioName}`
+    : selectedScenario === 'custom'
+      ? `上传：${customFileName}`
+      : `演示场景：${currentScenarioName}`
+  const scopeKey = selectedScenario === 'online'
+    ? `online:${onlineSource?.sourceId ?? 'unknown'}`
+    : selectedScenario === 'custom'
+      ? `custom:${customFileName}:${snapshot.dateRange.from}:${snapshot.dateRange.to}:${snapshot.rowCount}`
+      : `scenario:${selectedScenario}`
   const searchParams = new URLSearchParams(window.location.search)
 
   return (
@@ -388,7 +491,7 @@ export default function App() {
           <button className={`nav-item ${route === 'actions' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/actions')}><ListTodo size={17} />行动工单</button>
           <button className={`nav-item ${route === 'review' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/review')}><ClipboardCheck size={17} />周度复盘</button>
         </nav>
-        <div className="sidebar-foot"><Database size={14} /><span>上传数据仅在浏览器本地解析</span></div>
+        <div className="sidebar-foot"><Database size={14} /><span>本地 CSV 在浏览器解析；在线 CSV 通过受限连接器读取</span></div>
       </aside>
 
       <div className="workspace">
@@ -396,7 +499,7 @@ export default function App() {
           <DiagnosisPage
             snapshot={snapshot}
             initialFindingId={searchParams.get('finding') ?? undefined}
-            sourceName={selectedScenario === 'custom' ? `上传：${customFileName}` : `演示场景：${currentScenarioName}`}
+            sourceName={sourceName}
             scenarios={SCENARIOS}
             selectedScenario={selectedScenario}
             onScenarioChange={(id) => void loadScenario(id)}
@@ -409,7 +512,7 @@ export default function App() {
             snapshot={snapshot}
             rows={rows}
             scopeKey={scopeKey}
-            sourceName={selectedScenario === 'custom' ? `上传：${customFileName}` : `演示场景：${currentScenarioName}`}
+            sourceName={sourceName}
             scenarios={SCENARIOS}
             selectedScenario={selectedScenario}
             initialFindingId={searchParams.get('finding') ?? undefined}
@@ -422,7 +525,7 @@ export default function App() {
             snapshot={snapshot}
             rows={rows}
             scopeKey={scopeKey}
-            sourceName={selectedScenario === 'custom' ? `上传：${customFileName}` : `演示场景：${currentScenarioName}`}
+            sourceName={sourceName}
             scenarios={SCENARIOS}
             selectedScenario={selectedScenario}
             onScenarioChange={(id) => void loadScenario(id)}
@@ -437,6 +540,7 @@ export default function App() {
               <span className="sr-only">切换演示场景</span>
               <select value={selectedScenario} onChange={(event) => event.target.value !== 'custom' && void loadScenario(event.target.value)} disabled={loading}>
                 {selectedScenario === 'custom' && <option value="custom">上传：{customFileName}</option>}
+                {selectedScenario === 'online' && <option value="online">在线：{onlineSource?.name ?? customFileName}</option>}
                 <optgroup label="复杂多异常验收">
                   {SCENARIOS.filter((scenario) => scenario.group === 'complex').map((scenario) => <option value={scenario.id} key={scenario.id}>{scenario.name}</option>)}
                 </optgroup>
@@ -446,7 +550,7 @@ export default function App() {
               </select>
             </label>
             <a className="button button-secondary" href="/data/csv-template.csv" download><Download size={15} />下载模板</a>
-            <button className="button button-primary" type="button" onClick={() => fileInputRef.current?.click()}><Upload size={15} />导入 CSV</button>
+            <button className="button button-primary" type="button" onClick={() => setDataAccessOpen(true)}><Upload size={15} />数据接入</button>
             <input className="sr-only" ref={fileInputRef} type="file" accept=".csv,text/csv" onChange={(event) => void handleImport(event)} />
             <button className="button button-secondary button-icon-text" type="button" onClick={() => void loadScenario(DEFAULT_SCENARIO)}><RotateCcw size={15} />重置</button>
             <button className="button button-ai" type="button" onClick={() => openAi()}><Sparkles size={15} />AI</button>
@@ -455,9 +559,12 @@ export default function App() {
 
         <main className="dashboard">
           {loadError && <div className="inline-error"><FileWarning size={16} />{loadError}，当前仍展示上一次成功数据。</div>}
-          <section className="data-banner">
-            <div className="data-source"><span className={`source-dot ${selectedScenario === 'custom' ? 'source-custom' : ''}`} /><div><strong>{selectedScenario === 'custom' ? '当前使用用户上传数据' : '当前使用演示合成数据'}</strong><p>{snapshot.dateRange.from} 至 {snapshot.dateRange.to} · {snapshot.rowCount} 行 · {snapshot.skuCount} 个 SKU · {currentScenarioName}</p></div></div>
-            <button className="quality-link" type="button" onClick={() => setQualityOpen(true)}><CheckCircle2 size={15} /><span>数据质量：{importResult?.issues.length ? `${importResult.issues.length} 项提示` : '通过'}</span><ChevronRight size={14} /></button>
+          <section className={`data-banner ${selectedScenario === 'online' ? 'data-banner-online' : ''}`}>
+            <div className="data-source"><span className={`source-dot ${selectedScenario === 'custom' ? 'source-custom' : selectedScenario === 'online' ? 'source-online' : ''}`} /><div><strong>{selectedScenario === 'online' ? '当前使用模拟在线 CSV' : selectedScenario === 'custom' ? '当前使用用户上传数据' : '当前使用演示合成数据'}</strong><p>{snapshot.dateRange.from} 至 {snapshot.dateRange.to} · {snapshot.rowCount} 行 · {snapshot.skuCount} 个 SKU · {currentScenarioName}{onlineSource ? ` · 最近同步 ${dateTime(onlineSource.lastSyncedAt)}` : ''}</p></div></div>
+            <div className="data-banner-actions">
+              {onlineSource && <><span className="next-sync">{onlineSource.syncMode === 'interval_30m' ? `下次同步 ${dateTime(onlineSource.nextSyncAt)}` : '手动同步'}</span><button className="button button-secondary sync-now" type="button" disabled={syncing} onClick={() => void syncOnline(true)}>{syncing ? <LoaderCircle className="spin" size={14} /> : <RotateCcw size={14} />}{syncing ? '同步中' : onlineSource.version === 4 ? '重新同步' : '立即同步'}</button></>}
+              <button className="quality-link" type="button" onClick={() => setQualityOpen(true)}><CheckCircle2 size={15} /><span>数据质量：{importResult?.issues.length ? `${importResult.issues.length} 项提示` : '通过'}</span><ChevronRight size={14} /></button>
+            </div>
           </section>
 
           <section className="dashboard-section">
@@ -486,7 +593,7 @@ export default function App() {
 
           <section className="dashboard-section">
             <div className="section-heading chart-heading"><div><h2>近 30 天经营趋势</h2><p>单位、周期与来源随指标同步展示</p></div><label className="metric-picker"><span>查看指标</span><select value={trendMetric} onChange={(event) => setTrendMetric(event.target.value as TrendMetric)}><option value="netRevenue">净收入</option><option value="gmv">GMV</option><option value="orders">支付订单行</option><option value="refundOrderRate">退款率</option></select></label></div>
-            <div className="chart-card"><div className="chart-meta"><span>粒度：日</span><span>来源：当前{selectedScenario === 'custom' ? '上传' : '演示'}数据</span></div><TrendChart points={snapshot.daily} metric={trendMetric} /></div>
+            <div className="chart-card"><div className="chart-meta"><span>粒度：日</span><span>来源：当前{selectedScenario === 'online' ? '模拟在线' : selectedScenario === 'custom' ? '上传' : '演示'}数据</span></div><TrendChart points={snapshot.daily} metric={trendMetric} /></div>
           </section>
 
           <section className="dashboard-section">
@@ -497,13 +604,14 @@ export default function App() {
             </div>
           </section>
 
-          <footer className="data-notice"><Info size={15} /><div><strong>数据来源说明</strong><p>交易字段参考 UCI Online Retail 数据结构；曝光、点击、库存、履约和退款为合成字段，仅用于产品演示。系统未接入任何社交或购物平台官方 API。</p></div></footer>
+          <footer className="data-notice"><Info size={15} /><div><strong>数据来源说明</strong><p>交易字段参考 UCI Online Retail 数据结构；曝光、点击、库存、履约和退款为合成字段，仅用于产品演示。{selectedScenario === 'online' ? '当前为模拟在线 CSV 准实时同步，不代表已接入平台实时数据。' : ''}系统未接入任何社交或购物平台官方 API。</p></div></footer>
         </main>
         </>
         )}
       </div>
 
       {qualityOpen && importResult && <QualityModal result={importResult} onClose={() => setQualityOpen(false)} />}
+      {dataAccessOpen && <DataAccessModal currentOnline={onlineSource} onClose={() => setDataAccessOpen(false)} onUseDefault={() => void loadScenario(DEFAULT_SCENARIO)} onChooseLocal={() => fileInputRef.current?.click()} onApplyOnline={(result, syncMode) => applyOnlineResult(result, syncMode, onlineSource)} />}
       {aiOpen && aiFinding && <AiDrawer key={`${selectedScenario}-${aiFinding.id}-${aiQuestion ?? 'empty'}`} finding={aiFinding} initialQuestion={aiQuestion} onClose={() => setAiOpen(false)} onCreateAction={(target) => { setAiOpen(false); navigate(`/actions?create=1&finding=${encodeURIComponent(target.id)}&source=ai`) }} />}
       {notice && <div className="toast" role="status"><CheckCircle2 size={16} />{notice}</div>}
     </div>

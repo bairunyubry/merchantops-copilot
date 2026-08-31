@@ -85,7 +85,7 @@ export function WeeklyReviewPage({
   const currentOrders = useMemo(() => allOrders.filter((order) => order.scopeKey === scopeKey), [allOrders, scopeKey])
 
   useEffect(() => {
-    if (currentOrders.length > 0 || snapshot.findings.length === 0 || selectedScenario === 'custom') return
+    if (currentOrders.length > 0 || snapshot.findings.length === 0 || ['custom', 'online'].includes(selectedScenario)) return
     const seeded = buildDemoWorkOrders(snapshot, scopeKey)
     const next = [...allOrders, ...seeded]
     setAllOrders(next)
@@ -122,7 +122,7 @@ export function WeeklyReviewPage({
     <header className="topbar weekly-topbar">
       <div className="page-title"><h1>周度复盘</h1><p>青柚研究所 · 经营变化、问题处理与行动结果</p></div>
       <div className="top-actions weekly-top-actions">
-        <label className="select-control weekly-source-select"><span className="sr-only">切换数据场景</span><select value={selectedScenario} onChange={(event) => event.target.value !== 'custom' && onScenarioChange(event.target.value)}>{selectedScenario === 'custom' && <option value="custom">当前上传数据</option>}<optgroup label="复杂多异常验收">{scenarios.filter((item) => item.group === 'complex').map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</optgroup><optgroup label="单异常基础样例">{scenarios.filter((item) => item.group === 'single').map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</optgroup></select></label>
+        <label className="select-control weekly-source-select"><span className="sr-only">切换数据场景</span><select value={selectedScenario} onChange={(event) => !['custom', 'online'].includes(event.target.value) && onScenarioChange(event.target.value)}>{selectedScenario === 'custom' && <option value="custom">当前上传数据</option>}{selectedScenario === 'online' && <option value="online">当前在线数据</option>}<optgroup label="复杂多异常验收">{scenarios.filter((item) => item.group === 'complex').map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</optgroup><optgroup label="单异常基础样例">{scenarios.filter((item) => item.group === 'single').map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</optgroup></select></label>
         <label className="select-control weekly-period-select"><span className="sr-only">选择复盘周期</span><select value={review.period.id} onChange={(event) => setSelectedPeriodId(event.target.value)}>{periods.map((item) => <option value={item.id} key={item.id}>{item.label}</option>)}</select></label>
         <span className={`weekly-complete-badge ${review.period.isFormal ? 'is-formal' : 'is-stage'}`}>{review.period.isFormal ? <CheckCircle2 size={14} /> : <TriangleAlert size={14} />}{review.period.isFormal ? '数据完整 · 正式周报' : '阶段复盘'}</span>
         <button className="button button-disabled" type="button" disabled><Sparkles size={15} />DeepSeek 接入后解读</button>

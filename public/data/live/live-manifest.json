@@ -1,0 +1,53 @@
+{
+  "sourceId": "qingyou-live",
+  "sourceName": "青柚研究所 · 模拟在线 CSV",
+  "syncMode": "full_snapshot",
+  "dataNotice": "合成经营数据，仅用于模拟公开在线 CSV 的准实时同步。",
+  "versions": [
+    {
+      "version": 1,
+      "name": "稳定基线",
+      "description": "经营指标基本正常，用于建立首次连接后的规则基线。",
+      "expectedFindings": [],
+      "file": "qingyou-live-v1-30d.csv",
+      "latestCompleteDate": "2026-08-29",
+      "rows": 360
+    },
+    {
+      "version": 2,
+      "name": "异常出现",
+      "description": "洁面 SKU 退款集中，同时出现转化、履约和库存风险。",
+      "expectedFindings": [
+        "conversion_drop",
+        "refund_spike",
+        "sku_concentration",
+        "fulfillment_delay",
+        "inventory_shortage"
+      ],
+      "file": "qingyou-live-v2-30d.csv",
+      "latestCompleteDate": "2026-09-05",
+      "rows": 360
+    },
+    {
+      "version": 3,
+      "name": "行动后改善",
+      "description": "最新 7 日指标相对异常期改善，但仍未全部达到恢复阈值。",
+      "expectedFindings": [
+        "fulfillment_delay",
+        "inventory_shortage"
+      ],
+      "file": "qingyou-live-v3-30d.csv",
+      "latestCompleteDate": "2026-09-12",
+      "rows": 360
+    },
+    {
+      "version": 4,
+      "name": "指标恢复",
+      "description": "完整观察窗口内转化、退款、履约与库存均恢复到规则阈值内。",
+      "expectedFindings": [],
+      "file": "qingyou-live-v4-30d.csv",
+      "latestCompleteDate": "2026-09-19",
+      "rows": 360
+    }
+  ]
+}

@@ -88,8 +88,9 @@ export function DiagnosisPage({
         <div className="diagnosis-top-meta">
           <label className="select-control diagnosis-scenario-select">
             <span className="sr-only">切换诊断演示场景</span>
-            <select value={selectedScenario} onChange={(event) => event.target.value !== 'custom' && onScenarioChange(event.target.value)}>
+            <select value={selectedScenario} onChange={(event) => !['custom', 'online'].includes(event.target.value) && onScenarioChange(event.target.value)}>
               {selectedScenario === 'custom' && <option value="custom">当前上传数据</option>}
+              {selectedScenario === 'online' && <option value="online">当前在线数据</option>}
               <optgroup label="复杂多异常验收">
                 {scenarios.filter((scenario) => scenario.group === 'complex').map((scenario) => <option value={scenario.id} key={scenario.id}>{scenario.name}</option>)}
               </optgroup>
