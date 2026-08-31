@@ -25,6 +25,16 @@ import { DataAccessModal } from './components/DataAccessModal'
 import { DiagnosisPage } from './components/DiagnosisPage'
 import { TrendChart } from './components/TrendChart'
 import { WeeklyReviewPage } from './components/WeeklyReviewPage'
+import { readStoredActions } from './lib/actions'
+import {
+  buildAiContext,
+  buildRuleFallback,
+  requestAdvice,
+  type AdviceResponse,
+  type AiContext,
+  type AiSurface,
+} from './lib/ai'
+import { saveAiActionDraft } from './lib/aiDraft'
 import { parseMerchantCsv, type CsvImportResult } from './lib/csv'
 import {
   clearOnlineSource,
@@ -45,6 +55,7 @@ import {
   type DiagnosisFinding,
   type PrimaryFinding,
 } from './lib/dashboard'
+import { buildWeeklyReview, getReviewPeriods } from './lib/weeklyReview'
 import type { StoreDataRow } from './types/data'
 
 const DEFAULT_SCENARIO = 'combo_all_round'
@@ -63,14 +74,6 @@ const SCENARIOS = [
 ] as const
 
 type TrendMetric = 'netRevenue' | 'gmv' | 'orders' | 'refundOrderRate'
-
-interface RuleAnswer {
-  summary: string
-  evidence: string[]
-  action: string
-  verification: string
-  caveat: string
-}
 
 const money = (value: number) =>
   new Intl.NumberFormat('zh-CN', {
@@ -92,35 +95,6 @@ const signedPp = (value: number | null) =>
 const dateTime = (value: string | null) => value
   ? new Intl.DateTimeFormat('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(value))
   : '—'
-
-function ruleAnswerFor(finding: PrimaryFinding, question: string): RuleAnswer {
-  const actions: Record<PrimaryFinding['code'], string> = {
-    sku_concentration: '优先抽查关联 SKU 最近批次质量，并将延迟发货订单与退款原因交叉核对。',
-    refund_spike: '先按退款原因和 SKU 拆分异常订单，优先处理贡献最高且可快速验证的问题。',
-    conversion_drop: '检查高影响 SKU 的商品信息、价格和流量结构变化，并对关键页面做小范围修正。',
-    fulfillment_delay: '核对延迟订单集中的 SKU，区分缺货、仓内处理和物流揽收三个环节。',
-    inventory_shortage: '确认在途补货和未来活动计划，在缺货前调整补货量或降低该 SKU 的投放强度。',
-    no_material_issue: '保持观察，并结合近期活动计划检查规则未覆盖的客单价和流量结构变化。',
-  }
-  const verifications: Record<PrimaryFinding['code'], string> = {
-    sku_concentration: '记录处理日期，7 天后复查该 SKU 退款率、发货时长和退款原因分布。',
-    refund_spike: '7 天后比较全店及重点 SKU 退款率，并确认订单量没有明显缩小。',
-    conversion_drop: '7 天后比较点击—支付转化率，同时观察点击量和流量结构是否稳定。',
-    fulfillment_delay: '7 天后复查 48 小时发货达成率，并按延迟环节确认改善是否持续。',
-    inventory_shortage: '每日更新期末库存和在途量，7 天后确认库存覆盖天数是否恢复。',
-    no_material_issue: '继续观察 7 天，若指标触发阈值再创建针对性行动。',
-  }
-
-  return {
-    summary: question.includes('GMV')
-      ? `GMV 变化需要结合流量、转化和退款共同判断；当前最高优先级线索是：${finding.title}。`
-      : finding.title,
-    evidence: finding.evidence,
-    action: actions[finding.code],
-    verification: verifications[finding.code],
-    caveat: finding.caveat,
-  }
-}
 
 function KpiCard({
   label,
@@ -202,34 +176,70 @@ function QualityModal({ result, onClose }: { result: CsvImportResult; onClose: (
 
 function AiDrawer({
   finding,
+  findings,
+  surface,
+  context,
   initialQuestion,
   onCreateAction,
   onClose,
 }: {
   finding: PrimaryFinding
+  findings: DiagnosisFinding[]
+  surface: AiSurface
+  context: AiContext
   initialQuestion?: string
-  onCreateAction: (finding: PrimaryFinding) => void
+  onCreateAction: (finding: DiagnosisFinding, action: AdviceResponse['priorityActions'][number]) => void
   onClose: () => void
 }) {
   const presets = ['今天有什么经营问题？', 'GMV 为什么下降？', '我应该先处理什么？', '哪些 SKU 需要关注？']
   const [input, setInput] = useState('')
   const [question, setQuestion] = useState(initialQuestion ?? '')
-  const [answer, setAnswer] = useState<RuleAnswer | null>(
-    initialQuestion ? ruleAnswerFor(finding, initialQuestion) : null,
-  )
+  const [accessCode, setAccessCode] = useState(() => sessionStorage.getItem('merchantops.demo-access-code') ?? '')
+  const [answer, setAnswer] = useState<AdviceResponse | null>(() => initialQuestion ? buildRuleFallback({
+    question: initialQuestion,
+    surface,
+    selectedFindingId: finding.id === 'finding-none' ? null : finding.id,
+    context,
+  }, 'access_code_not_entered') : null)
+  const [asking, setAsking] = useState(false)
+  const [requestError, setRequestError] = useState('')
 
-  const ask = (value: string) => {
+  const ask = async (value: string) => {
     const normalized = value.trim()
     if (!normalized) return
     setQuestion(normalized)
-    setAnswer(ruleAnswerFor(finding, normalized))
     setInput('')
+    setRequestError('')
+    const safeRequest = {
+      question: normalized,
+      surface,
+      selectedFindingId: finding.id === 'finding-none' ? null : finding.id,
+      context,
+    }
+    if (!accessCode.trim()) {
+      setAnswer(buildRuleFallback(safeRequest, 'access_code_not_entered'))
+      setRequestError('输入演示口令后可调用 DeepSeek；当前展示规则建议。')
+      return
+    }
+    sessionStorage.setItem('merchantops.demo-access-code', accessCode.trim())
+    setAsking(true)
+    try {
+      setAnswer(await requestAdvice({ ...safeRequest, accessCode: accessCode.trim() }))
+    } catch (error) {
+      setAnswer(buildRuleFallback(safeRequest, 'client_request_error'))
+      setRequestError(error instanceof Error ? error.message : 'AI 服务暂时不可用，已切换规则建议。')
+    } finally {
+      setAsking(false)
+    }
   }
 
   const submit = (event: FormEvent) => {
     event.preventDefault()
-    ask(input)
+    void ask(input)
   }
+
+  const firstAction = answer?.priorityActions[0]
+  const actionFinding = firstAction ? findings.find((item) => item.id === firstAction.findingId) : undefined
 
   return (
     <>
@@ -238,33 +248,36 @@ function AiDrawer({
         <header className="ai-header">
           <div className="ai-title">
             <span className="ai-icon"><Sparkles size={18} /></span>
-            <div><strong>AI 经营助手</strong><span>规则建议模式 · DeepSeek 下一阶段接入</span></div>
+            <div><strong>AI 经营助手</strong><span>{answer?.mode === 'ai' ? `DeepSeek · ${answer.meta.model}` : '规则建议模式 · AI 可降级'}</span></div>
           </div>
           <button className="icon-button" type="button" onClick={onClose} aria-label="收起 AI 助手"><X size={18} /></button>
         </header>
         <div className="ai-body">
           <div className="ai-privacy"><Database size={14} />只读取当前聚合结果，不读取订单明细或个人信息</div>
+          <label className="ai-access-code"><span>演示口令</span><input type="password" value={accessCode} onChange={(event) => setAccessCode(event.target.value)} placeholder="不输入仍可使用规则建议" autoComplete="off" /></label>
+          {requestError && <div className="ai-request-error"><Info size={14} />{requestError}</div>}
           <section className="preset-section">
             <p>你可以这样问</p>
-            <div className="preset-grid">{presets.map((preset) => <button type="button" key={preset} onClick={() => ask(preset)}>{preset}</button>)}</div>
+            <div className="preset-grid">{presets.map((preset) => <button type="button" key={preset} disabled={asking} onClick={() => void ask(preset)}>{preset}</button>)}</div>
           </section>
           {question && <div className="user-bubble"><strong>{question}</strong><span>你的问题</span></div>}
           {answer ? (
             <article className="answer-card">
-              <section><h3>结论</h3><p>{answer.summary}</p></section>
-              <section><h3>数据证据</h3><ul>{answer.evidence.map((item) => <li key={item}>{item}</li>)}</ul></section>
-              <section><h3>建议先做</h3><p>{answer.action}</p></section>
-              <section><h3>验证方法</h3><p>{answer.verification}</p></section>
-              <div className="caveat"><Info size={15} /><span>{answer.caveat}</span></div>
-              <button className="button button-primary" type="button" onClick={() => onCreateAction(finding)}><ListTodo size={15} />采纳为行动工单</button>
+              <div className={`answer-mode mode-${answer.mode}`}>{answer.mode === 'ai' ? 'AI 解释' : '规则降级'}</div>
+              <section><h3>结论</h3><p>{answer.answer}</p></section>
+              <section><h3>数据证据</h3><ul>{answer.evidence.map((item, index) => <li key={`${item.findingId}-${index}`}>{item.text}</li>)}</ul></section>
+              {answer.hypotheses.length > 0 && <section><h3>待验证假设</h3>{answer.hypotheses.map((item, index) => <div className="hypothesis-item" key={`${item.statement}-${index}`}><p>{item.statement}</p><small>验证：{item.verification}</small></div>)}</section>}
+              {firstAction && <><section><h3>建议先做</h3><p>{firstAction.action}</p><small className="action-reason">依据：{firstAction.reason}</small></section><section><h3>验证方法</h3><p>{firstAction.verification}</p></section></>}
+              {answer.caveats.length > 0 && <div className="caveat"><Info size={15} /><span>{answer.caveats.join('；')}</span></div>}
+              {firstAction && actionFinding && <button className="button button-primary" type="button" onClick={() => onCreateAction(actionFinding, firstAction)}><ListTodo size={15} />采纳为行动工单</button>}
             </article>
           ) : (
             <div className="ai-empty"><Bot size={28} /><strong>从一个经营问题开始</strong><p>回答将引用当前看板证据，并说明验证方法和不确定性。</p></div>
           )}
         </div>
         <form className="ai-composer" onSubmit={submit}>
-          <input value={input} onChange={(event) => setInput(event.target.value)} placeholder="输入经营问题…" aria-label="输入经营问题" />
-          <button type="submit" aria-label="发送"><Send size={17} /></button>
+          <input value={input} onChange={(event) => setInput(event.target.value)} placeholder="输入经营问题…" aria-label="输入经营问题" disabled={asking} />
+          <button type="submit" aria-label="发送" disabled={asking}>{asking ? <LoaderCircle className="spin" size={17} /> : <Send size={17} />}</button>
         </form>
         <p className="ai-disclaimer">AI 建议仅作辅助判断，不代表实际经营结果</p>
       </aside>
@@ -286,6 +299,8 @@ export default function App() {
   const [aiOpen, setAiOpen] = useState(false)
   const [aiQuestion, setAiQuestion] = useState<string | undefined>()
   const [aiFinding, setAiFinding] = useState<PrimaryFinding | null>(null)
+  const [aiSurface, setAiSurface] = useState<AiSurface>('overview')
+  const [aiContext, setAiContext] = useState<AiContext | null>(null)
   const routeForPath = (path: string): 'overview' | 'diagnosis' | 'actions' | 'review' => {
     if (path.startsWith('/diagnosis')) return 'diagnosis'
     if (path.startsWith('/actions')) return 'actions'
@@ -437,12 +452,6 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
-  const openAi = (question?: string, targetFinding?: PrimaryFinding) => {
-    setAiQuestion(question)
-    setAiFinding(targetFinding ?? snapshot?.primaryFinding ?? null)
-    setAiOpen(true)
-  }
-
   if (loading && !snapshot) {
     return <div className="page-state"><LoaderCircle className="spin" size={28} /><strong>正在加载青柚研究所示例数据…</strong></div>
   }
@@ -481,6 +490,26 @@ export default function App() {
       : `scenario:${selectedScenario}`
   const searchParams = new URLSearchParams(window.location.search)
 
+  const openAi = (surface: AiSurface, question?: string, targetFinding?: PrimaryFinding) => {
+    const orders = readStoredActions().filter((order) => order.scopeKey === scopeKey)
+    const latestReviewPeriod = getReviewPeriods(rows)[0]
+    const weeklyReview = latestReviewPeriod ? buildWeeklyReview(rows, latestReviewPeriod, orders) : null
+    const context = buildAiContext({
+      snapshot,
+      sourceName,
+      sourceType: selectedScenario === 'online' ? 'online_csv' : selectedScenario === 'custom' ? 'local_csv' : 'sample',
+      isSynthetic: selectedScenario !== 'custom' && (selectedScenario !== 'online' || onlineSource?.version !== null),
+      orders,
+      weeklyReview,
+      importResult,
+    })
+    setAiSurface(surface)
+    setAiContext(context)
+    setAiQuestion(question)
+    setAiFinding(targetFinding ?? snapshot.primaryFinding)
+    setAiOpen(true)
+  }
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -504,7 +533,7 @@ export default function App() {
             selectedScenario={selectedScenario}
             onScenarioChange={(id) => void loadScenario(id)}
             onBack={() => navigate('/')}
-            onExplain={(target: DiagnosisFinding) => openAi('请解释这个经营异常，并告诉我应该先做什么。', target)}
+            onExplain={(target: DiagnosisFinding) => openAi('diagnosis', '请解释这个经营异常，并告诉我应该先做什么。', target)}
             onCreateAction={(target: DiagnosisFinding) => navigate(`/actions?create=1&finding=${encodeURIComponent(target.id)}&source=rule`)}
           />
         ) : route === 'actions' ? (
@@ -530,6 +559,7 @@ export default function App() {
             selectedScenario={selectedScenario}
             onScenarioChange={(id) => void loadScenario(id)}
             onGoActions={() => navigate('/actions')}
+            onExplain={() => openAi('review', '请结合本期经营变化、工单执行和监控结果，解释哪些假设得到支持，并给出下期优先事项。')}
           />
         ) : (
         <>
@@ -553,7 +583,7 @@ export default function App() {
             <button className="button button-primary" type="button" onClick={() => setDataAccessOpen(true)}><Upload size={15} />数据接入</button>
             <input className="sr-only" ref={fileInputRef} type="file" accept=".csv,text/csv" onChange={(event) => void handleImport(event)} />
             <button className="button button-secondary button-icon-text" type="button" onClick={() => void loadScenario(DEFAULT_SCENARIO)}><RotateCcw size={15} />重置</button>
-            <button className="button button-ai" type="button" onClick={() => openAi()}><Sparkles size={15} />AI</button>
+            <button className="button button-ai" type="button" onClick={() => openAi('overview')}><Sparkles size={15} />AI</button>
           </div>
         </header>
 
@@ -586,7 +616,7 @@ export default function App() {
               <p className="finding-summary">{finding.summary}</p>
               <div className="finding-bottom">
                 <div className="evidence-box"><strong>数据证据</strong><div>{finding.evidence.map((item) => <span key={item}>{item}</span>)}</div><p>待验证：{finding.caveat}</p></div>
-                <div className="finding-actions"><span>置信度 {Math.round(finding.confidence * 100)}%</span><button className="button button-secondary" type="button" onClick={() => navigate(`/diagnosis?finding=${finding.id}`)}>查看完整诊断</button><button className="button button-primary" type="button" onClick={() => openAi('请解释这个经营异常，并告诉我应该先做什么。', finding)}><MessageSquareText size={15} />让 AI 解释</button></div>
+                <div className="finding-actions"><span>置信度 {Math.round(finding.confidence * 100)}%</span><button className="button button-secondary" type="button" onClick={() => navigate(`/diagnosis?finding=${finding.id}`)}>查看完整诊断</button><button className="button button-primary" type="button" onClick={() => openAi('diagnosis', '请解释这个经营异常，并告诉我应该先做什么。', finding)}><MessageSquareText size={15} />让 AI 解释</button></div>
               </div>
             </article>
           </section>
@@ -612,7 +642,7 @@ export default function App() {
 
       {qualityOpen && importResult && <QualityModal result={importResult} onClose={() => setQualityOpen(false)} />}
       {dataAccessOpen && <DataAccessModal currentOnline={onlineSource} onClose={() => setDataAccessOpen(false)} onUseDefault={() => void loadScenario(DEFAULT_SCENARIO)} onChooseLocal={() => fileInputRef.current?.click()} onApplyOnline={(result, syncMode) => applyOnlineResult(result, syncMode, onlineSource)} />}
-      {aiOpen && aiFinding && <AiDrawer key={`${selectedScenario}-${aiFinding.id}-${aiQuestion ?? 'empty'}`} finding={aiFinding} initialQuestion={aiQuestion} onClose={() => setAiOpen(false)} onCreateAction={(target) => { setAiOpen(false); navigate(`/actions?create=1&finding=${encodeURIComponent(target.id)}&source=ai`) }} />}
+      {aiOpen && aiFinding && aiContext && <AiDrawer key={`${selectedScenario}-${aiSurface}-${aiFinding.id}-${aiQuestion ?? 'empty'}`} finding={aiFinding} findings={snapshot.findings} surface={aiSurface} context={aiContext} initialQuestion={aiQuestion} onClose={() => setAiOpen(false)} onCreateAction={(target, action) => { saveAiActionDraft({ findingId: target.id, action: action.action, reason: action.reason, verification: action.verification }); setAiOpen(false); navigate(`/actions?create=1&finding=${encodeURIComponent(target.id)}&source=ai`) }} />}
       {notice && <div className="toast" role="status"><CheckCircle2 size={16} />{notice}</div>}
     </div>
   )

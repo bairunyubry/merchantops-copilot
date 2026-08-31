@@ -1,14 +1,22 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { fetchPublicCsv, PublicCsvError } from './server/csvProxy.ts'
+import adviceHandler from './api/advice.ts'
 
-function localApi() {
+function localApi(env: Record<string, string>) {
   return {
     name: 'merchantops-local-api',
     configureServer(server: import('vite').ViteDevServer) {
+      for (const name of ['DEEPSEEK_API_KEY', 'DEEPSEEK_BASE_URL', 'DEEPSEEK_MODEL', 'DEMO_ACCESS_CODE']) {
+        if (env[name]) process.env[name] = env[name]
+      }
       server.middlewares.use(async (req, res, next) => {
         const requestUrl = new URL(req.url ?? '/', 'http://127.0.0.1')
+        if (requestUrl.pathname === '/api/advice') {
+          await adviceHandler(req, res)
+          return
+        }
         if (requestUrl.pathname === '/api/demo-live.csv') {
           const requested = Number(requestUrl.searchParams.get('version') ?? 1)
           const version = Number.isInteger(requested) ? Math.min(4, Math.max(1, requested)) : 1
@@ -46,6 +54,7 @@ function localApi() {
   }
 }
 
-export default defineConfig({
-  plugins: [react(), tailwindcss(), localApi()],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  return { plugins: [react(), tailwindcss(), localApi(env)] }
 })

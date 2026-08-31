@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1120" viewBox="0 0 1600 1120">
+  <defs>
+    <style>
+      .bg{fill:#f2f5f9}.card{fill:#fff;stroke:#bcc7d8;stroke-width:2}.rule{fill:#eef4ff;stroke:#5d7fe0;stroke-width:2}.ai{fill:#f6f1ff;stroke:#8a70df;stroke-width:2}.user{fill:#fff8e8;stroke:#d4a344;stroke-width:2}.good{fill:#eff9f4;stroke:#58a47d;stroke-width:2}.risk{fill:#fff4f4;stroke:#df7777;stroke-width:2}.muted{fill:#f7f9fc;stroke:#cad2df;stroke-width:2}.title{font:700 32px 'Microsoft YaHei',sans-serif;fill:#10213b}.h2{font:700 20px 'Microsoft YaHei',sans-serif;fill:#13223a}.h3{font:700 16px 'Microsoft YaHei',sans-serif;fill:#17243a}.body{font:13px 'Microsoft YaHei',sans-serif;fill:#53627a}.small{font:12px 'Microsoft YaHei',sans-serif;fill:#718098}.ruleLabel{font:700 11px 'Microsoft YaHei',sans-serif;fill:#365dcb}.aiLabel{font:700 11px 'Microsoft YaHei',sans-serif;fill:#6a4fc1}.userLabel{font:700 11px 'Microsoft YaHei',sans-serif;fill:#94671e}.arrow{stroke:#7f8da3;stroke-width:2;fill:none;marker-end:url(#arrow)}.flow{stroke:#5075d6;stroke-width:3;fill:none;marker-end:url(#blueArrow)}.dash{stroke:#8d98a9;stroke-width:2;stroke-dasharray:7 6;fill:none;marker-end:url(#arrow)}
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#7f8da3"/></marker>
+    <marker id="blueArrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#5075d6"/></marker>
+  </defs>
+  <rect class="bg" width="1600" height="1120"/>
+  <text class="title" x="60" y="58">AI 经营助手｜能力边界与调用流程 v0.1</text>
+  <text class="body" x="60" y="88">产品原则：规则提供可复现事实，AI负责解释与建议，用户确认行动和经验；AI不可成为第二套指标或诊断系统。</text>
+
+  <text class="h2" x="60" y="132">一、三个使用入口</text>
+  <rect class="user" x="60" y="156" width="410" height="138" rx="14"/>
+  <text class="userLabel" x="84" y="184">经营总览</text><text class="h3" x="84" y="214">“今天有什么经营问题？”</text>
+  <text class="body" x="84" y="244">自动读取 KPI、全部异常与 SKU 贡献</text><text class="small" x="84" y="270">输出经营摘要与优先行动</text>
+  <rect class="user" x="595" y="156" width="410" height="138" rx="14"/>
+  <text class="userLabel" x="619" y="184">异常诊断</text><text class="h3" x="619" y="214">“解释这项异常，应该先做什么？”</text>
+  <text class="body" x="619" y="244">自动追加 selectedFindingId 与完整证据</text><text class="small" x="619" y="270">建议可转为关联异常的行动工单</text>
+  <rect class="user" x="1130" y="156" width="410" height="138" rx="14"/>
+  <text class="userLabel" x="1154" y="184">周度复盘</text><text class="h3" x="1154" y="214">“这次行动有效吗？”</text>
+  <text class="body" x="1154" y="244">读取工单执行、监控状态与前后指标</text><text class="small" x="1154" y="270">解释结果并草拟候选经验</text>
+
+  <text class="h2" x="60" y="346">二、端到端调用流程</text>
+  <rect class="user" x="60" y="374" width="185" height="116" rx="12"/><text class="userLabel" x="80" y="400">用户</text><text class="h3" x="80" y="430">只输入问题</text><text class="small" x="80" y="458">不手动提交数据</text>
+  <rect class="rule" x="290" y="374" width="235" height="116" rx="12"/><text class="ruleLabel" x="312" y="400">前端事实层</text><text class="h3" x="312" y="430">buildAiContext</text><text class="small" x="312" y="458">指标＋异常＋工单＋复盘</text>
+  <rect class="rule" x="570" y="374" width="220" height="116" rx="12"/><text class="ruleLabel" x="592" y="400">服务端</text><text class="h3" x="592" y="430">/api/advice</text><text class="small" x="592" y="458">口令＋Schema＋大小校验</text>
+  <rect class="ai" x="835" y="374" width="235" height="116" rx="12"/><text class="aiLabel" x="857" y="400">DeepSeek</text><text class="h3" x="857" y="430">JSON Output</text><text class="small" x="857" y="458">解释、假设、行动、限制</text>
+  <rect class="rule" x="1115" y="374" width="205" height="116" rx="12"/><text class="ruleLabel" x="1137" y="400">输出守门</text><text class="h3" x="1137" y="430">Zod 校验</text><text class="small" x="1137" y="458">Finding 引用与长度检查</text>
+  <rect class="good" x="1365" y="374" width="175" height="116" rx="12"/><text class="h3" x="1387" y="420">页面呈现</text><text class="small" x="1387" y="448">证据可核对</text><text class="small" x="1387" y="468">建议可转工单</text>
+  <path class="flow" d="M245 432H275"/><path class="flow" d="M525 432H555"/><path class="flow" d="M790 432H820"/><path class="flow" d="M1070 432H1100"/><path class="flow" d="M1320 432H1350"/>
+
+  <rect class="risk" x="570" y="528" width="750" height="92" rx="12"/>
+  <text class="h3" x="594" y="559">任一 AI 环节失败：未配置 Key、超时、余额不足、空内容、非法 JSON、Schema 不合法</text>
+  <text class="body" x="594" y="588">返回同结构 rule_fallback → 页面显示“规则建议模式” → 仍可查看证据和创建工单</text>
+  <path class="dash" d="M952 490V514H945V523"/>
+
+  <text class="h2" x="60" y="680">三、输入边界：允许发送什么</text>
+  <rect class="good" x="60" y="706" width="700" height="178" rx="14"/>
+  <text class="h3" x="84" y="738">允许｜聚合经营事实</text>
+  <text class="body" x="84" y="770">• 当前期与基线 KPI、变化值、周期和数据来源</text>
+  <text class="body" x="84" y="798">• Finding 排名、证据、规则建议与不确定性</text>
+  <text class="body" x="84" y="826">• 工单执行状态、规则监控结果、周度复盘事实</text>
+  <text class="small" x="84" y="858">输入标记 isSynthetic，AI 必须说明模拟数据性质</text>
+  <rect class="risk" x="800" y="706" width="740" height="178" rx="14"/>
+  <text class="h3" x="824" y="738">禁止｜明细、凭据与事实改写</text>
+  <text class="body" x="824" y="770">• 原始 CSV、单笔订单、姓名、手机号、地址</text>
+  <text class="body" x="824" y="798">• API Key、数据源密钥、演示口令与内部报错详情</text>
+  <text class="body" x="824" y="826">• 让 AI 自行计算指标、改变优先级或判断恢复</text>
+  <text class="small" x="824" y="858">服务端环境变量不进入浏览器、Prompt 和响应体</text>
+
+  <text class="h2" x="60" y="936">四、输出责任链</text>
+  <rect class="rule" x="60" y="962" width="300" height="92" rx="12"/><text class="ruleLabel" x="84" y="989">规则事实</text><text class="h3" x="84" y="1018">指标、异常、排序、恢复状态</text><text class="small" x="84" y="1041">不可由 AI 修改</text>
+  <rect class="ai" x="435" y="962" width="335" height="92" rx="12"/><text class="aiLabel" x="459" y="989">AI 草拟</text><text class="h3" x="459" y="1018">解释、待验证假设、行动、经验</text><text class="small" x="459" y="1041">必须引用已有 findingId</text>
+  <rect class="user" x="845" y="962" width="300" height="92" rx="12"/><text class="userLabel" x="869" y="989">用户确认</text><text class="h3" x="869" y="1018">采纳建议、创建工单、关单</text><text class="small" x="869" y="1041">保留业务决策权</text>
+  <rect class="good" x="1220" y="962" width="320" height="92" rx="12"/><text class="h3" x="1244" y="1005">进入行动与复盘闭环</text><text class="small" x="1244" y="1033">新数据继续由规则判断结果</text>
+  <path class="arrow" d="M360 1008H420"/><path class="arrow" d="M770 1008H830"/><path class="arrow" d="M1145 1008H1205"/>
+</svg>

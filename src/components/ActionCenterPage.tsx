@@ -35,6 +35,7 @@ import {
   type MonitorStatus,
 } from '../lib/actions'
 import type { DashboardSnapshot, DiagnosisFinding } from '../lib/dashboard'
+import { clearAiActionDraft, readAiActionDraft, type AiActionDraft } from '../lib/aiDraft'
 import type { StoreDataRow } from '../types/data'
 
 const EXECUTION_OPTIONS: Array<{ value: 'all' | ExecutionStatus; label: string }> = [
@@ -67,6 +68,7 @@ function ActionCreateModal({
   snapshot,
   scopeKey,
   initialFindingId,
+  initialDraft,
   source,
   onClose,
   onCreate,
@@ -75,15 +77,16 @@ function ActionCreateModal({
   snapshot: DashboardSnapshot
   scopeKey: string
   initialFindingId?: string
+  initialDraft?: AiActionDraft | null
   source: ActionSource
   onClose: () => void
   onCreate: (order: ActionWorkOrder) => void
 }) {
-  const initialFinding = findings.find((finding) => finding.id === initialFindingId) ?? findings[0]
+  const initialFinding = findings.find((finding) => finding.id === (initialDraft?.findingId ?? initialFindingId)) ?? findings[0]
   const [findingId, setFindingId] = useState(initialFinding?.id ?? '')
   const finding = findings.find((item) => item.id === findingId) ?? initialFinding
-  const [title, setTitle] = useState(finding?.ruleSuggestion.replace(/[。.]$/, '') ?? '')
-  const [actionText, setActionText] = useState(finding?.ruleSuggestion ?? '')
+  const [title, setTitle] = useState(initialDraft?.action.replace(/[。.]$/, '') ?? finding?.ruleSuggestion.replace(/[。.]$/, '') ?? '')
+  const [actionText, setActionText] = useState(initialDraft?.action ?? finding?.ruleSuggestion ?? '')
   const [dueDate, setDueDate] = useState(actionDate.shift(snapshot.latestCompleteDate, 3))
   const [reviewDate, setReviewDate] = useState(actionDate.shift(snapshot.latestCompleteDate, 7))
   const [effort, setEffort] = useState(2)
@@ -128,6 +131,7 @@ function ActionCreateModal({
             <p>{finding.metric.label}：当前 {finding.metric.currentLabel}｜基线 {finding.metric.baselineLabel}｜规则 {finding.metric.thresholdLabel}</p>
             <small>{finding.relatedSkuName ? `关联 SKU：${finding.relatedSkuName}` : '监控范围：全店'} · 后续 Finding 消失仍保留本口径</small>
           </div>
+          {initialDraft && finding.id === initialDraft.findingId && <div className="ai-draft-preview"><Bot size={15} /><div><strong>已带入 AI 建议，可由你修改后创建</strong><p>{initialDraft.reason}</p><small>验证方法：{initialDraft.verification}</small></div></div>}
           <label className="action-field"><span>工单标题</span><input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={80} required /></label>
           <label className="action-field"><span>行动内容</span><textarea value={actionText} onChange={(event) => setActionText(event.target.value)} rows={3} maxLength={300} required /></label>
           <div className="action-form-grid">
@@ -228,6 +232,7 @@ export function ActionCenterPage({
   const [query, setQuery] = useState('')
   const [executionFilter, setExecutionFilter] = useState<'all' | ExecutionStatus>('all')
   const [monitorFilter, setMonitorFilter] = useState<'all' | MonitorStatus>('all')
+  const [aiDraft] = useState(() => initialSource === 'ai' ? readAiActionDraft() : null)
 
   const currentOrders = useMemo(() => allOrders.filter((order) => order.scopeKey === scopeKey), [allOrders, scopeKey])
 
@@ -260,6 +265,7 @@ export function ActionCenterPage({
 
   const createOrder = (order: ActionWorkOrder) => {
     saveOrders([...allOrders, order])
+    if (order.source === 'ai') clearAiActionDraft()
     setCreateOpen(false)
     setSelectedId(order.id)
     window.history.replaceState({}, '', '/actions')
@@ -324,7 +330,7 @@ export function ActionCenterPage({
         <footer className="data-notice"><Info size={15} /><div><strong>监控口径说明</strong><p>行动执行后第 1–7 个完整自然日作为首个观察窗口。系统可以反馈恢复，但最终关闭工单仍由用户确认。</p></div></footer>
       </main>
 
-      {createOpen && <ActionCreateModal findings={snapshot.findings} snapshot={snapshot} scopeKey={scopeKey} initialFindingId={initialFindingId} source={initialSource} onClose={() => setCreateOpen(false)} onCreate={createOrder} />}
+      {createOpen && <ActionCreateModal findings={snapshot.findings} snapshot={snapshot} scopeKey={scopeKey} initialFindingId={initialFindingId} initialDraft={aiDraft} source={initialSource} onClose={() => setCreateOpen(false)} onCreate={createOrder} />}
       {selected && <ActionDetailDrawer order={selected} latestCompleteDate={snapshot.latestCompleteDate} onClose={() => setSelectedId(null)} onStatus={(status) => updateOrder(selected.id, (order) => updateExecutionStatus(order, status, snapshot.latestCompleteDate))} onContinue={() => updateOrder(selected.id, (order) => continueMonitoringCycle(order, snapshot.latestCompleteDate))} />}
     </>
   )
