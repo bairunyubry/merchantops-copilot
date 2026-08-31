@@ -225,7 +225,8 @@ function AiDrawer({
   const presets = ['今天有什么经营问题？', 'GMV 为什么下降？', '我应该先处理什么？', '哪些 SKU 需要关注？']
   const [input, setInput] = useState('')
   const [question, setQuestion] = useState(initialQuestion ?? '')
-  const [accessCode, setAccessCode] = useState(() => sessionStorage.getItem('merchantops.demo-access-code') ?? '')
+  const savedAccessCode = useRef(sessionStorage.getItem('merchantops.demo-access-code') ?? '')
+  const [accessCode, setAccessCode] = useState(savedAccessCode.current)
   const [answer, setAnswer] = useState<AdviceResponse | null>(() => initialQuestion ? buildRuleFallback({
     question: initialQuestion,
     surface,
@@ -234,6 +235,7 @@ function AiDrawer({
   }, 'access_code_not_entered') : null)
   const [asking, setAsking] = useState(false)
   const [requestError, setRequestError] = useState('')
+  const initialRequestSent = useRef(false)
 
   const ask = async (value: string) => {
     const normalized = value.trim()
@@ -268,6 +270,12 @@ function AiDrawer({
     event.preventDefault()
     void ask(input)
   }
+
+  useEffect(() => {
+    if (initialRequestSent.current || !initialQuestion || !savedAccessCode.current.trim()) return
+    initialRequestSent.current = true
+    void ask(initialQuestion)
+  }, [initialQuestion])
 
   const firstAction = answer?.priorityActions[0]
   const actionFinding = firstAction ? findings.find((item) => item.id === firstAction.findingId) : undefined
@@ -548,7 +556,7 @@ export default function App() {
         <div className="brand"><span className="brand-mark"><BarChart3 size={19} /></span><div><strong>商家经营罗盘</strong><small>MerchantOps Copilot</small></div></div>
         <nav aria-label="产品导航">
           <button className={`nav-item ${route === 'overview' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/')}><LayoutDashboard size={17} />经营总览</button>
-          <button className={`nav-item ${route === 'diagnosis' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/diagnosis')}><TriangleAlert size={17} />异常诊断{snapshot.findings.length > 0 && <span>{snapshot.findings.length}</span>}</button>
+          <button className={`nav-item ${route === 'diagnosis' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/diagnosis')}><TriangleAlert size={17} />异常诊断</button>
           <button className={`nav-item ${route === 'actions' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/actions')}><ListTodo size={17} />行动工单</button>
           <button className={`nav-item ${route === 'review' ? 'nav-active' : ''}`} type="button" onClick={() => navigate('/review')}><ClipboardCheck size={17} />周度复盘</button>
         </nav>

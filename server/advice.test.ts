@@ -40,10 +40,13 @@ describe('DeepSeek advice service', () => {
     await expect(generateAdvice(adviceRequestFixture, { apiKey: 'key', fetchImpl })).rejects.toMatchObject({ reason: 'upstream_timeout' })
   })
 
-  it('拒绝模型编造的 findingId', async () => {
+  it('删除模型编造的 findingId，并用规则建议补齐行动', async () => {
     const invalid = { ...content, priorityActions: [{ ...content.priorityActions[0], findingId: 'invented' }] }
     const fetchImpl = vi.fn(async () => responseWith({ choices: [{ message: { content: JSON.stringify(invalid) } }] })) as typeof fetch
-    await expect(generateAdvice(adviceRequestFixture, { apiKey: 'key', fetchImpl })).rejects.toMatchObject({ reason: 'invalid_reference' })
+    const result = await generateAdvice(adviceRequestFixture, { apiKey: 'key', fetchImpl })
+    expect(result.mode).toBe('ai')
+    expect(result.priorityActions[0]?.findingId).toBe('finding-refund')
+    expect(result.caveats.join('')).toContain('规则建议补齐')
   })
 
   it('系统提示词明确规则事实层和因果边界', () => {

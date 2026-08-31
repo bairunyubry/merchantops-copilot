@@ -54,11 +54,20 @@ function withoutAccessCode(request: AdviceRequest): Omit<AdviceRequest, 'accessC
   return safe
 }
 
-function validateReferences(request: AdviceRequest, content: z.infer<typeof adviceContentSchema>) {
+function sanitizeReferences(request: AdviceRequest, content: z.infer<typeof adviceContentSchema>) {
   const findingIds = new Set(request.context.findings.map((finding) => finding.id))
-  const invalidEvidence = content.evidence.some((item) => item.findingId !== null && !findingIds.has(item.findingId))
-  const invalidActions = content.priorityActions.some((item) => !findingIds.has(item.findingId))
-  if (invalidEvidence || invalidActions) throw new AdviceFailure('invalid_reference', 'AI 返回了不存在的异常引用。')
+  const evidence = content.evidence.filter((item) => item.findingId === null || findingIds.has(item.findingId))
+  const priorityActions = content.priorityActions.filter((item) => findingIds.has(item.findingId))
+  const repaired = evidence.length !== content.evidence.length || priorityActions.length !== content.priorityActions.length
+  if (!repaired) return content
+
+  const fallback = buildRuleFallback(withoutAccessCode(request), 'invalid_reference_repaired')
+  return adviceContentSchema.parse({
+    ...content,
+    evidence: evidence.length > 0 ? evidence : fallback.evidence,
+    priorityActions: priorityActions.length > 0 ? priorityActions : fallback.priorityActions,
+    caveats: [...content.caveats, '部分模型引用未能关联现有异常，已删除并用规则建议补齐。'].slice(0, 6),
+  })
 }
 
 export async function generateAdvice(requestValue: unknown, options?: {
@@ -120,7 +129,7 @@ export async function generateAdvice(requestValue: unknown, options?: {
   } catch (error) {
     throw new AdviceFailure(error instanceof SyntaxError ? 'invalid_json' : 'invalid_schema', 'DeepSeek 输出未通过结构校验。')
   }
-  validateReferences(request, content)
+  content = sanitizeReferences(request, content)
   return adviceResponseSchema.parse({
     ...content,
     mode: 'ai',
@@ -132,4 +141,3 @@ export function safeFallback(requestValue: unknown, reason: string) {
   const request = adviceRequestSchema.parse(requestValue)
   return buildRuleFallback(withoutAccessCode(request), reason)
 }
-
