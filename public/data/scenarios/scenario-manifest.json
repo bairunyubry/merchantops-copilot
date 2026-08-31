@@ -29,7 +29,10 @@
       "expectedFindings": [
         "conversion_drop"
       ],
-      "description": "最近7天点击后下单转化率较基线下降超过20%，两期点击量均满足最小样本。"
+      "description": "最近7天点击后下单转化率较基线下降超过20%，两期点击量均满足最小样本。",
+      "effects": {
+        "conversionMultiplier": 0.67
+      }
     },
     {
       "id": "refund_spike",
@@ -38,7 +41,10 @@
       "expectedFindings": [
         "refund_spike"
       ],
-      "description": "最近7天订单退款率较基线增加至少3个百分点，异常分散在多个SKU。"
+      "description": "最近7天订单退款率较基线增加至少3个百分点，异常分散在多个SKU。",
+      "effects": {
+        "refundRate": 0.095
+      }
     },
     {
       "id": "fulfillment_delay",
@@ -47,7 +53,11 @@
       "expectedFindings": [
         "fulfillment_delay"
       ],
-      "description": "最近7天全店48小时发货达成率低于90%，且已发货订单满足最小样本。"
+      "description": "最近7天全店48小时发货达成率低于90%，且已发货订单满足最小样本。",
+      "effects": {
+        "shipRate": 0.81,
+        "avgShipHours": 49
+      }
     },
     {
       "id": "inventory_shortage",
@@ -56,7 +66,12 @@
       "expectedFindings": [
         "inventory_shortage"
       ],
-      "description": "防晒SKU期末库存不足近7天平均销量的7天覆盖量。"
+      "description": "防晒SKU期末库存不足近7天平均销量的7天覆盖量。",
+      "effects": {
+        "lowStockSkus": [
+          "QY-SUN-005"
+        ]
+      }
     },
     {
       "id": "sku_concentration",
@@ -66,7 +81,113 @@
         "refund_spike",
         "sku_concentration"
       ],
-      "description": "洁面SKU贡献超过40%的超额退款，并伴随该SKU发货变慢；仅作为待验证关联。"
+      "description": "洁面SKU贡献超过40%的超额退款，并伴随该SKU发货变慢；仅作为待验证关联。",
+      "effects": {
+        "concentratedRefundSku": "QY-CLEAN-001",
+        "concentratedRefundRate": 0.42,
+        "concentratedShipRate": 0.56
+      }
+    },
+    {
+      "id": "combo_growth_pressure",
+      "file": "qingyou-combo-growth-pressure-30d.csv",
+      "name": "组合A｜增长承压",
+      "expectedFindings": [
+        "conversion_drop",
+        "refund_spike"
+      ],
+      "description": "转化率显著下降，同时出现分散型退款上升，用于验收两个独立问题的排序切换。",
+      "effects": {
+        "conversionMultiplier": 0.62,
+        "refundRate": 0.088
+      }
+    },
+    {
+      "id": "combo_service_breakdown",
+      "file": "qingyou-combo-service-breakdown-30d.csv",
+      "name": "组合B｜服务链路失速",
+      "expectedFindings": [
+        "refund_spike",
+        "sku_concentration",
+        "fulfillment_delay",
+        "inventory_shortage"
+      ],
+      "description": "重点SKU退款集中、全店履约下降且两个SKU库存不足，合并后形成三个独立问题。",
+      "effects": {
+        "concentratedRefundSku": "QY-CLEAN-001",
+        "concentratedRefundRate": 0.55,
+        "shipRate": 0.78,
+        "avgShipHours": 54,
+        "lowStockSkus": [
+          "QY-SUN-005",
+          "QY-SERUM-002"
+        ]
+      }
+    },
+    {
+      "id": "combo_all_round",
+      "file": "qingyou-combo-all-round-30d.csv",
+      "name": "组合C｜全链路告警",
+      "expectedFindings": [
+        "conversion_drop",
+        "refund_spike",
+        "sku_concentration",
+        "fulfillment_delay",
+        "inventory_shortage"
+      ],
+      "description": "转化、售后、履约与库存四个维度同时异常，用于验收完整列表、合并关系和优先级排序。",
+      "effects": {
+        "conversionMultiplier": 0.58,
+        "concentratedRefundSku": "QY-CREAM-003",
+        "concentratedRefundRate": 0.46,
+        "shipRate": 0.74,
+        "avgShipHours": 59,
+        "lowStockSkus": [
+          "QY-SUN-005",
+          "QY-CREAM-003",
+          "QY-MASK-004"
+        ]
+      }
+    },
+    {
+      "id": "combo_cashflow_risk",
+      "file": "qingyou-combo-cashflow-risk-30d.csv",
+      "name": "组合D｜收入与供给风险",
+      "expectedFindings": [
+        "conversion_drop",
+        "refund_spike",
+        "inventory_shortage"
+      ],
+      "description": "转化下降叠加分散型高退款，并出现热销SKU库存不足，形成三个独立问题。",
+      "effects": {
+        "conversionMultiplier": 0.69,
+        "refundRate": 0.118,
+        "lowStockSkus": [
+          "QY-SERUM-002",
+          "QY-SUN-005"
+        ]
+      }
+    },
+    {
+      "id": "combo_operations_overload",
+      "file": "qingyou-combo-operations-overload-30d.csv",
+      "name": "组合E｜运营承载不足",
+      "expectedFindings": [
+        "conversion_drop",
+        "fulfillment_delay",
+        "inventory_shortage"
+      ],
+      "description": "无明显退款异常，但转化、履约和库存同时恶化，用于验证非售后问题也能排到第一。",
+      "effects": {
+        "conversionMultiplier": 0.64,
+        "shipRate": 0.69,
+        "avgShipHours": 64,
+        "lowStockSkus": [
+          "QY-SUN-005",
+          "QY-MASK-004",
+          "QY-SERUM-002"
+        ]
+      }
     }
   ]
 }

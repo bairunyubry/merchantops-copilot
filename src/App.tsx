@@ -30,14 +30,19 @@ import {
 } from './lib/dashboard'
 import type { StoreDataRow } from './types/data'
 
-const DEFAULT_SCENARIO = 'sku_concentration'
+const DEFAULT_SCENARIO = 'combo_all_round'
 
 const SCENARIOS = [
-  { id: 'sku_concentration', name: '旗舰异常', file: 'qingyou-sku-concentration-30d.csv' },
-  { id: 'conversion_drop', name: '转化下降', file: 'qingyou-conversion-drop-30d.csv' },
-  { id: 'refund_spike', name: '退款异常', file: 'qingyou-refund-spike-30d.csv' },
-  { id: 'fulfillment_delay', name: '履约异常', file: 'qingyou-fulfillment-delay-30d.csv' },
-  { id: 'inventory_shortage', name: '库存不足', file: 'qingyou-inventory-shortage-30d.csv' },
+  { id: 'combo_growth_pressure', name: '组合A｜增长承压', file: 'qingyou-combo-growth-pressure-30d.csv', group: 'complex' },
+  { id: 'combo_service_breakdown', name: '组合B｜服务链路失速', file: 'qingyou-combo-service-breakdown-30d.csv', group: 'complex' },
+  { id: 'combo_all_round', name: '组合C｜全链路告警', file: 'qingyou-combo-all-round-30d.csv', group: 'complex' },
+  { id: 'combo_cashflow_risk', name: '组合D｜收入与供给风险', file: 'qingyou-combo-cashflow-risk-30d.csv', group: 'complex' },
+  { id: 'combo_operations_overload', name: '组合E｜运营承载不足', file: 'qingyou-combo-operations-overload-30d.csv', group: 'complex' },
+  { id: 'sku_concentration', name: '旗舰异常', file: 'qingyou-sku-concentration-30d.csv', group: 'single' },
+  { id: 'conversion_drop', name: '转化下降', file: 'qingyou-conversion-drop-30d.csv', group: 'single' },
+  { id: 'refund_spike', name: '退款异常', file: 'qingyou-refund-spike-30d.csv', group: 'single' },
+  { id: 'fulfillment_delay', name: '履约异常', file: 'qingyou-fulfillment-delay-30d.csv', group: 'single' },
+  { id: 'inventory_shortage', name: '库存不足', file: 'qingyou-inventory-shortage-30d.csv', group: 'single' },
 ] as const
 
 type TrendMetric = 'netRevenue' | 'gmv' | 'orders' | 'refundOrderRate'
@@ -380,6 +385,9 @@ export default function App() {
             snapshot={snapshot}
             initialFindingId={new URLSearchParams(window.location.search).get('finding') ?? undefined}
             sourceName={selectedScenario === 'custom' ? `上传：${customFileName}` : `演示场景：${currentScenarioName}`}
+            scenarios={SCENARIOS}
+            selectedScenario={selectedScenario}
+            onScenarioChange={(id) => void loadScenario(id)}
             onBack={() => navigate('/')}
             onExplain={(target: DiagnosisFinding) => openAi('请解释这个经营异常，并告诉我应该先做什么。', target)}
           />
@@ -392,7 +400,12 @@ export default function App() {
               <span className="sr-only">切换演示场景</span>
               <select value={selectedScenario} onChange={(event) => event.target.value !== 'custom' && void loadScenario(event.target.value)} disabled={loading}>
                 {selectedScenario === 'custom' && <option value="custom">上传：{customFileName}</option>}
-                {SCENARIOS.map((scenario) => <option value={scenario.id} key={scenario.id}>场景：{scenario.name}</option>)}
+                <optgroup label="复杂多异常验收">
+                  {SCENARIOS.filter((scenario) => scenario.group === 'complex').map((scenario) => <option value={scenario.id} key={scenario.id}>{scenario.name}</option>)}
+                </optgroup>
+                <optgroup label="单异常基础样例">
+                  {SCENARIOS.filter((scenario) => scenario.group === 'single').map((scenario) => <option value={scenario.id} key={scenario.id}>{scenario.name}</option>)}
+                </optgroup>
               </select>
             </label>
             <a className="button button-secondary" href="/data/csv-template.csv" download><Download size={15} />下载模板</a>

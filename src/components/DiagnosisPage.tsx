@@ -7,7 +7,9 @@ import {
   Info,
   ListTodo,
   MessageSquareText,
+  PanelLeftOpen,
   ShieldAlert,
+  X,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { DashboardSnapshot, DiagnosisFinding } from '../lib/dashboard'
@@ -30,21 +32,35 @@ export function DiagnosisPage({
   snapshot,
   initialFindingId,
   sourceName,
+  scenarios,
+  selectedScenario,
+  onScenarioChange,
   onBack,
   onExplain,
 }: {
   snapshot: DashboardSnapshot
   initialFindingId?: string
   sourceName: string
+  scenarios: ReadonlyArray<{ id: string; name: string; group: 'complex' | 'single' }>
+  selectedScenario: string
+  onScenarioChange: (id: string) => void
   onBack: () => void
   onExplain: (finding: DiagnosisFinding) => void
 }) {
   const [selectedId, setSelectedId] = useState(initialFindingId ?? snapshot.findings[0]?.id ?? '')
+  const [listOpen, setListOpen] = useState(false)
 
   useEffect(() => {
     const validInitial = snapshot.findings.some((finding) => finding.id === initialFindingId)
     setSelectedId(validInitial ? initialFindingId! : snapshot.findings[0]?.id ?? '')
   }, [initialFindingId, snapshot])
+
+  useEffect(() => {
+    if (!listOpen) return
+    const closeOnEscape = (event: KeyboardEvent) => event.key === 'Escape' && setListOpen(false)
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [listOpen])
 
   const selected = useMemo(
     () => snapshot.findings.find((finding) => finding.id === selectedId) ?? snapshot.findings[0],
@@ -53,6 +69,7 @@ export function DiagnosisPage({
 
   const selectFinding = (finding: DiagnosisFinding) => {
     setSelectedId(finding.id)
+    setListOpen(false)
     const url = new URL(window.location.href)
     url.searchParams.set('finding', finding.id)
     window.history.replaceState({}, '', `${url.pathname}${url.search}`)
@@ -67,6 +84,18 @@ export function DiagnosisPage({
           <p>青柚研究所 · 数据截止 {snapshot.latestCompleteDate} · {sourceName}</p>
         </div>
         <div className="diagnosis-top-meta">
+          <label className="select-control diagnosis-scenario-select">
+            <span className="sr-only">切换诊断演示场景</span>
+            <select value={selectedScenario} onChange={(event) => event.target.value !== 'custom' && onScenarioChange(event.target.value)}>
+              {selectedScenario === 'custom' && <option value="custom">当前上传数据</option>}
+              <optgroup label="复杂多异常验收">
+                {scenarios.filter((scenario) => scenario.group === 'complex').map((scenario) => <option value={scenario.id} key={scenario.id}>{scenario.name}</option>)}
+              </optgroup>
+              <optgroup label="单异常基础样例">
+                {scenarios.filter((scenario) => scenario.group === 'single').map((scenario) => <option value={scenario.id} key={scenario.id}>{scenario.name}</option>)}
+              </optgroup>
+            </select>
+          </label>
           <span><CircleGauge size={15} />按优先级从高到低</span>
           <button className="button button-ai" type="button" disabled={!selected} onClick={() => selected && onExplain(selected)}>
             <MessageSquareText size={15} />让 AI 解释当前问题
@@ -80,11 +109,18 @@ export function DiagnosisPage({
             <strong>本期识别 {snapshot.findings.length} 个独立经营问题</strong>
             <p>所有达到规则阈值的问题均会展示；优先级只决定处理顺序，不会隐藏其他异常。</p>
           </div>
-          {snapshot.rawFindingCount > snapshot.findings.length && (
-            <span className="merge-note">
-              <CheckCircle2 size={14} />命中 {snapshot.rawFindingCount} 条规则，合并为 {snapshot.findings.length} 个独立问题
-            </span>
-          )}
+          <div className="diagnosis-summary-actions">
+            {snapshot.rawFindingCount > snapshot.findings.length && (
+              <span className="merge-note">
+                <CheckCircle2 size={14} />命中 {snapshot.rawFindingCount} 条规则，合并为 {snapshot.findings.length} 个独立问题
+              </span>
+            )}
+            {snapshot.findings.length > 0 && (
+              <button className="button button-secondary finding-list-trigger" type="button" onClick={() => setListOpen(true)}>
+                <PanelLeftOpen size={15} />全部异常 · {snapshot.findings.length}
+              </button>
+            )}
+          </div>
         </section>
 
         {snapshot.findings.length === 0 || !selected ? (
@@ -96,27 +132,30 @@ export function DiagnosisPage({
           </section>
         ) : (
           <div className="diagnosis-layout">
-            <aside className="finding-list" aria-label="全部经营异常">
+            {listOpen && <button className="finding-drawer-scrim" type="button" aria-label="收起异常列表" onClick={() => setListOpen(false)} />}
+            <aside className={`finding-list finding-drawer ${listOpen ? 'finding-drawer-open' : ''}`} aria-label="全部经营异常" aria-hidden={!listOpen}>
               <div className="finding-list-head">
-                <div><strong>全部异常</strong><span>{snapshot.findings.length} 项</span></div>
-                <p>点击查看每项完整证据</p>
+                <div><strong>全部异常</strong><span>{snapshot.findings.length} 项</span><button className="icon-button" type="button" onClick={() => setListOpen(false)} aria-label="收起异常列表"><X size={17} /></button></div>
+                <p>按优先级排序 · 点击后查看完整证据</p>
               </div>
-              {snapshot.findings.map((finding, index) => (
-                <button
-                  className={`finding-list-item ${finding.id === selected.id ? 'finding-list-active' : ''}`}
-                  key={finding.id}
-                  type="button"
-                  onClick={() => selectFinding(finding)}
-                >
-                  <span className={`finding-rank severity-${finding.severity}`}>{index + 1}</span>
-                  <span className="finding-list-copy">
-                    <small>{CATEGORY_LABEL[finding.category]} · {SEVERITY_LABEL[finding.severity]}</small>
-                    <strong>{finding.title}</strong>
-                    <em>内部排序分 {finding.priority.total}</em>
-                  </span>
-                  <ChevronRight size={15} />
-                </button>
-              ))}
+              <div className="finding-list-scroll">
+                {snapshot.findings.map((finding, index) => (
+                  <button
+                    className={`finding-list-item ${finding.id === selected.id ? 'finding-list-active' : ''}`}
+                    key={finding.id}
+                    type="button"
+                    onClick={() => selectFinding(finding)}
+                  >
+                    <span className={`finding-rank severity-${finding.severity}`}>{index + 1}</span>
+                    <span className="finding-list-copy">
+                      <small>{CATEGORY_LABEL[finding.category]} · {SEVERITY_LABEL[finding.severity]}</small>
+                      <strong>{finding.title}</strong>
+                      <em>内部排序分 {finding.priority.total}</em>
+                    </span>
+                    <ChevronRight size={15} />
+                  </button>
+                ))}
+              </div>
               <div className="ranking-note"><Info size={13} /><p>排序分 = 严重度 30% + 经营影响 30% + 紧急度 25% + 数据置信度 15%</p></div>
             </aside>
 

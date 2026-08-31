@@ -255,17 +255,24 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .breadcrumb-button { display: inline-flex; align-items: center; gap: 4px; margin: 0 0 3px; padding: 0; border: 0; color: #65728a; background: transparent; font-size: 9px; cursor: pointer; }
 .diagnosis-top-meta { display: flex; align-items: center; gap: 12px; }
 .diagnosis-top-meta > span { display: inline-flex; align-items: center; gap: 6px; color: #768195; font-size: 10px; }
+.diagnosis-scenario-select select { width: 210px; max-width: 210px; }
 .diagnosis-page { display: grid; gap: 16px; padding: 18px 24px 44px; }
 .diagnosis-summary-strip { min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 10px 14px; border: 1px solid #d5dbe6; border-radius: 9px; background: #f7f8fa; }
 .diagnosis-summary-strip strong { display: block; font-size: 12px; }
 .diagnosis-summary-strip p { margin: 3px 0 0; color: #7a8598; font-size: 10px; }
 .merge-note { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border-radius: 6px; color: #526787; background: #e9edf4; font-size: 9px; white-space: nowrap; }
-.diagnosis-layout { display: grid; grid-template-columns: 292px minmax(0, 1fr); align-items: start; gap: 16px; }
-.finding-list { position: sticky; top: 16px; overflow: hidden; border: 1px solid #cad1dd; border-radius: 10px; background: #fff; }
+.diagnosis-summary-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.finding-list-trigger { min-width: 120px; }
+.diagnosis-layout { display: block; min-width: 0; }
+.finding-drawer-scrim { position: fixed; inset: 86px 0 0 176px; z-index: 41; border: 0; background: rgba(17, 24, 39, 0.2); }
+.finding-list { overflow: hidden; border: 1px solid #cad1dd; border-radius: 10px; background: #fff; }
+.finding-drawer { position: fixed; top: 86px; left: 176px; z-index: 42; width: 340px; max-height: calc(100vh - 102px); display: flex; flex-direction: column; border-radius: 0 12px 12px 0; box-shadow: 16px 0 38px rgba(24, 32, 51, 0.16); transform: translateX(-105%); visibility: hidden; transition: transform 0.2s ease, visibility 0.2s; }
+.finding-drawer-open { transform: translateX(0); visibility: visible; }
+.finding-list-scroll { min-height: 0; flex: 1; overflow-y: auto; overscroll-behavior: contain; }
 .finding-list-head { padding: 15px; border-bottom: 1px solid #e3e7ed; }
-.finding-list-head > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.finding-list-head > div { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; }
 .finding-list-head strong { font-size: 14px; }
-.finding-list-head span { min-width: 28px; padding: 2px 7px; border-radius: 10px; color: #57657b; background: #edf0f4; font-size: 9px; text-align: center; }
+.finding-list-head span { justify-self: start; min-width: 28px; padding: 2px 7px; border-radius: 10px; color: #57657b; background: #edf0f4; font-size: 9px; text-align: center; }
 .finding-list-head p { margin: 3px 0 0; color: #8a94a6; font-size: 9px; }
 .finding-list-item { width: 100%; display: grid; grid-template-columns: 26px minmax(0, 1fr) 16px; align-items: start; gap: 9px; padding: 13px 12px; border: 0; border-bottom: 1px solid #e8ebf0; color: #30394c; background: #fff; text-align: left; cursor: pointer; }
 .finding-list-item:hover { background: #f8f9fb; }
@@ -345,22 +352,24 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .diagnosis-empty p { max-width: 520px; margin: 0; font-size: 10px; line-height: 1.7; }
 
 @media (max-width: 1050px) {
-  .diagnosis-layout { grid-template-columns: 250px minmax(0, 1fr); }
   .score-grid, .metric-evidence-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 840px) {
   .diagnosis-topbar { display: grid; }
   .diagnosis-page { padding: 16px; }
-  .diagnosis-layout { grid-template-columns: 1fr; }
-  .finding-list { position: static; }
+  .finding-drawer-scrim { inset: 0; }
+  .finding-drawer { top: 0; left: 0; width: min(340px, 92vw); max-height: 100vh; border-radius: 0 12px 12px 0; }
   .detail-two-column { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 600px) {
   .diagnosis-top-meta { align-items: stretch; flex-direction: column; }
   .diagnosis-top-meta .button { width: 100%; }
+  .diagnosis-scenario-select, .diagnosis-scenario-select select { width: 100%; max-width: none; }
   .diagnosis-summary-strip { align-items: flex-start; flex-direction: column; }
+  .diagnosis-summary-actions { width: 100%; align-items: stretch; flex-direction: column; }
+  .finding-list-trigger { width: 100%; }
   .merge-note { white-space: normal; }
   .diagnosis-page, .diagnosis-summary-strip, .diagnosis-layout, .finding-list, .finding-detail, .finding-detail-hero, .detail-section { width: 100%; min-width: 0; max-width: 100%; }
   .finding-detail-hero, .detail-section { overflow: hidden; }

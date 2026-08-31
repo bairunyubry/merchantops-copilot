@@ -6,9 +6,9 @@
 
 - [x] 项目 Brief 与精简 PRD 评审通过
 - [x] React + TypeScript + Vite 工程初始化
-- [x] “青柚研究所”5 组平行 30 天示例数据
+- [x] “青柚研究所”5 组单异常＋5 组多异常 30 天示例数据
 - [x] CSV 模板、字段校验与场景规则测试
-- [ ] 经营总览与规则诊断
+- [x] 经营总览与规则诊断
 - [ ] AI 经营问答与规则降级
 - [ ] Vercel 部署与求职材料
 
@@ -23,4 +23,4 @@ pnpm dev
 
 项目不调用或模拟任何社交、电商平台官方 API。默认使用明确标注的合成数据；用户上传的原始 CSV 仅在浏览器本地解析，后续 AI 只接收聚合指标与规则诊断结果。
 
-数据文件位于 `public/data/scenarios/`，字段说明见 `docs/data-dictionary.md`。可运行 `pnpm data:generate` 确定性地重新生成全部示例 CSV。
+数据文件位于 `public/data/scenarios/`，字段说明见 `docs/data-dictionary.md`。其中 5 份组合场景可同时触发 2–4 个独立经营问题，用于验收规则合并、动态排序和异常切换。可运行 `pnpm data:generate` 确定性地重新生成全部示例 CSV。

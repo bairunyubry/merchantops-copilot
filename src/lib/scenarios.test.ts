@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { parseMerchantCsv } from './csv'
 import { evaluateScenario } from './metrics'
+import { buildDashboardSnapshot } from './dashboard'
 import type { FindingCode } from '../types/data'
 
 const scenarios: Array<{ file: string; expected: FindingCode[] }> = [
@@ -14,6 +15,11 @@ const scenarios: Array<{ file: string; expected: FindingCode[] }> = [
     file: 'qingyou-sku-concentration-30d.csv',
     expected: ['refund_spike', 'sku_concentration'],
   },
+  { file: 'qingyou-combo-growth-pressure-30d.csv', expected: ['conversion_drop', 'refund_spike'] },
+  { file: 'qingyou-combo-service-breakdown-30d.csv', expected: ['refund_spike', 'sku_concentration', 'fulfillment_delay', 'inventory_shortage'] },
+  { file: 'qingyou-combo-all-round-30d.csv', expected: ['conversion_drop', 'refund_spike', 'sku_concentration', 'fulfillment_delay', 'inventory_shortage'] },
+  { file: 'qingyou-combo-cashflow-risk-30d.csv', expected: ['conversion_drop', 'refund_spike', 'inventory_shortage'] },
+  { file: 'qingyou-combo-operations-overload-30d.csv', expected: ['conversion_drop', 'fulfillment_delay', 'inventory_shortage'] },
 ]
 
 describe('30 天平行示例数据', () => {
@@ -30,5 +36,20 @@ describe('30 天平行示例数据', () => {
     expect(evaluation.latestCompleteDate).toBe('2026-08-29')
     expect(evaluation.findingCodes.sort()).toEqual([...expected].sort())
   })
-})
 
+  it.each([
+    ['qingyou-combo-growth-pressure-30d.csv', 2],
+    ['qingyou-combo-service-breakdown-30d.csv', 3],
+    ['qingyou-combo-all-round-30d.csv', 4],
+    ['qingyou-combo-cashflow-risk-30d.csv', 3],
+    ['qingyou-combo-operations-overload-30d.csv', 3],
+  ] as const)('$0 会生成 $1 个独立且有序的经营问题', (file, independentCount) => {
+    const imported = parseMerchantCsv(readFileSync(resolve('public/data/scenarios', file), 'utf8'))
+    const snapshot = buildDashboardSnapshot(imported.rows)
+    expect(snapshot.findings).toHaveLength(independentCount)
+    expect(new Set(snapshot.findings.map((finding) => finding.category))).toHaveLength(independentCount)
+    expect(snapshot.findings.map((finding) => finding.priority.total)).toEqual(
+      [...snapshot.findings].map((finding) => finding.priority.total).sort((a, b) => b - a),
+    )
+  })
+})
