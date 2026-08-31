@@ -174,6 +174,37 @@ function QualityModal({ result, onClose }: { result: CsvImportResult; onClose: (
   )
 }
 
+function UsageGuideModal({ onClose }: { onClose: () => void }) {
+  const steps = [
+    { icon: <Database size={18} />, title: '1. 接入经营数据', copy: '直接体验青柚研究所示例数据，或上传本地 CSV、连接公开在线 CSV。' },
+    { icon: <BarChart3 size={18} />, title: '2. 查看经营总览', copy: '系统在浏览器内聚合 GMV、净收入、订单、转化、退款和履约指标。' },
+    { icon: <TriangleAlert size={18} />, title: '3. 定位经营异常', copy: '规则引擎计算全部异常、证据和优先级；结论可复现，不由 AI 编造。' },
+    { icon: <Sparkles size={18} />, title: '4. 获取 AI 解释', copy: 'AI 读取聚合事实，解释可能原因、建议动作和验证方法，不改写规则结论。' },
+    { icon: <ListTodo size={18} />, title: '5. 创建行动工单', copy: '采纳 AI 建议或填写自己的方案，关联原异常并持续监控对应指标。' },
+    { icon: <ClipboardCheck size={18} />, title: '6. 周度复盘结果', copy: '系统比较行动前后数据，AI 辅助总结假设是否得到支持及下一周期重点。' },
+  ]
+  return (
+    <div className="modal-backdrop guide-backdrop" role="presentation" onMouseDown={onClose}>
+      <section className="modal usage-guide-modal" role="dialog" aria-modal="true" aria-labelledby="usage-guide-title" onMouseDown={(event) => event.stopPropagation()}>
+        <header className="guide-hero">
+          <div><span className="guide-badge">PRODUCT GUIDE</span><h2 id="usage-guide-title">商家经营罗盘使用说明</h2><p>帮助缺少专业运营能力的新手商家，把“看见数据”推进到“找到问题、采取行动、验证结果”。</p></div>
+          <button className="icon-button" type="button" onClick={onClose} aria-label="关闭使用说明"><X size={19} /></button>
+        </header>
+        <div className="guide-body">
+          <section className="guide-principle">
+            <div><strong>规则是事实层</strong><p>负责指标计算、异常判断、优先级和监控结论。</p></div>
+            <div><strong>AI 是解释层</strong><p>负责解释证据、提出待验证假设和生成行动表达。</p></div>
+            <div><strong>商家是决策层</strong><p>决定是否执行、如何调整，以及是否确认问题解决。</p></div>
+          </section>
+          <section className="guide-steps"><header><h3>推荐使用路径</h3><span>完整闭环约 3–5 分钟</span></header><div>{steps.map((step) => <article key={step.title}><i>{step.icon}</i><div><strong>{step.title}</strong><p>{step.copy}</p></div></article>)}</div></section>
+          <section className="guide-boundary"><Info size={17} /><div><strong>演示与数据边界</strong><p>默认数据为明确标注的合成数据；项目未接入任何社交或购物平台官方 API。AI 仅接收聚合指标、规则异常和工单摘要，不接收订单明细或个人信息。</p></div></section>
+        </div>
+        <footer className="modal-footer guide-footer"><span>建议从“组合C｜全链路告警”开始体验完整流程。</span><button className="button button-primary" type="button" onClick={onClose}>开始使用</button></footer>
+      </section>
+    </div>
+  )
+}
+
 function AiDrawer({
   finding,
   findings,
@@ -294,6 +325,7 @@ export default function App() {
   const [importResult, setImportResult] = useState<CsvImportResult | null>(null)
   const [qualityOpen, setQualityOpen] = useState(false)
   const [dataAccessOpen, setDataAccessOpen] = useState(false)
+  const [guideOpen, setGuideOpen] = useState(false)
   const [onlineSource, setOnlineSource] = useState<OnlineSourceConfig | null>(() => readOnlineSource()?.config ?? null)
   const [syncing, setSyncing] = useState(false)
   const [aiOpen, setAiOpen] = useState(false)
@@ -566,6 +598,7 @@ export default function App() {
         <header className="topbar">
           <div className="page-title"><h1>经营总览</h1><p>青柚研究所 · 美妆个护 · 数据截止 {snapshot.latestCompleteDate}</p></div>
           <div className="top-actions">
+            <button className="button button-secondary guide-trigger" type="button" onClick={() => setGuideOpen(true)}><Info size={15} />使用说明</button>
             <label className="select-control">
               <span className="sr-only">切换演示场景</span>
               <select value={selectedScenario} onChange={(event) => event.target.value !== 'custom' && void loadScenario(event.target.value)} disabled={loading}>
@@ -641,6 +674,7 @@ export default function App() {
       </div>
 
       {qualityOpen && importResult && <QualityModal result={importResult} onClose={() => setQualityOpen(false)} />}
+      {guideOpen && <UsageGuideModal onClose={() => setGuideOpen(false)} />}
       {dataAccessOpen && <DataAccessModal currentOnline={onlineSource} onClose={() => setDataAccessOpen(false)} onUseDefault={() => void loadScenario(DEFAULT_SCENARIO)} onChooseLocal={() => fileInputRef.current?.click()} onApplyOnline={(result, syncMode) => applyOnlineResult(result, syncMode, onlineSource)} />}
       {aiOpen && aiFinding && aiContext && <AiDrawer key={`${selectedScenario}-${aiSurface}-${aiFinding.id}-${aiQuestion ?? 'empty'}`} finding={aiFinding} findings={snapshot.findings} surface={aiSurface} context={aiContext} initialQuestion={aiQuestion} onClose={() => setAiOpen(false)} onCreateAction={(target, action) => { saveAiActionDraft({ findingId: target.id, action: action.action, reason: action.reason, verification: action.verification }); setAiOpen(false); navigate(`/actions?create=1&finding=${encodeURIComponent(target.id)}&source=ai`) }} />}
       {notice && <div className="toast" role="status"><CheckCircle2 size={16} />{notice}</div>}
