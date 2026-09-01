@@ -1114,3 +1114,40 @@ select option { color: #dceaff; background: #0b214a; }
 }
 .page-state strong { color: #f2f7ff; }
 .page-error { color: #ff8295; }
+
+/* Lock the application viewport to vertical page scrolling only */
+html, body, #root {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+.app-shell {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
+}
+.workspace {
+  min-width: 0;
+  max-width: calc(100vw - 208px);
+  overflow-x: clip;
+}
+.dashboard, .weekly-page, .action-page, .diagnosis-page,
+.dashboard-section, .weekly-section, .action-list-section,
+.diagnosis-layout, .finding-detail, .chart-card, .panel-card {
+  min-width: 0;
+  max-width: 100%;
+}
+.chart-card, .trend-chart, .finding-chart-card, .finding-trend-chart {
+  overflow: hidden;
+}
+.action-table-wrap, .weekly-action-section, .sidebar nav, .top-actions {
+  overscroll-behavior-x: contain;
+}
+
+@media (min-width: 841px) and (max-width: 1180px) {
+  .workspace { max-width: calc(100vw - 188px); }
+}
+
+@media (max-width: 840px) {
+  .workspace { max-width: 100vw; }
+}
