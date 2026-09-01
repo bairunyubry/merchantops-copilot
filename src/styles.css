@@ -841,7 +841,10 @@ html, body {
 .guide-footer { background: #fff; }
 
 @media (min-width: 841px) {
-  .sidebar { position: sticky; top: 0; }
+  .app-shell { display: block; }
+  .sidebar { position: fixed; inset: 0 auto 0 0; width: 208px; height: 100vh; }
+  .workspace { width: calc(100vw - 208px); margin-left: 208px; padding-top: 82px; }
+  .topbar { position: fixed; top: 0; right: 0; left: 208px; width: auto; min-height: 82px; }
 }
 
 @media (max-width: 1180px) {
@@ -849,11 +852,17 @@ html, body {
   .workspace { width: calc(100vw - 188px); }
 }
 
+@media (min-width: 841px) and (max-width: 1180px) {
+  .sidebar { width: 188px; }
+  .workspace { width: calc(100vw - 188px); margin-left: 188px; padding-top: 118px; }
+  .topbar { left: 188px; min-height: 118px; }
+}
+
 @media (max-width: 840px) {
   .app-shell { display: block; }
   .sidebar { position: static; width: 100%; }
-  .workspace { width: 100%; }
-  .topbar { top: 0; }
+  .workspace { width: 100%; margin-left: 0; padding-top: 0; }
+  .topbar { position: sticky; top: 0; right: auto; left: auto; width: 100%; }
   .guide-principle { grid-template-columns: 1fr; }
 }
 
