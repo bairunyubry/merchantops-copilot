@@ -27,12 +27,13 @@ export function TrendChart({ points, metric }: TrendChartProps) {
       className="trend-chart"
       option={{
         animation: false,
-        color: ['#5470c6'],
+        color: ['#67d5ff'],
         grid: { left: 58, right: 28, top: 34, bottom: 45 },
         tooltip: {
           trigger: 'axis',
-          backgroundColor: '#111827',
-          borderWidth: 0,
+          backgroundColor: 'rgba(5, 18, 48, 0.94)',
+          borderColor: 'rgba(113, 200, 255, 0.35)',
+          borderWidth: 1,
           textStyle: { color: '#fff', fontSize: 12 },
           formatter: (params: Array<{ axisValue: string; value: number }>) => {
             const item = params[0]
@@ -46,16 +47,16 @@ export function TrendChart({ points, metric }: TrendChartProps) {
           type: 'category',
           boundaryGap: false,
           data: points.map((point) => point.date.slice(5)),
-          axisLine: { lineStyle: { color: '#d7dde8' } },
+          axisLine: { lineStyle: { color: 'rgba(155, 190, 230, 0.24)' } },
           axisTick: { show: false },
-          axisLabel: { color: '#7a8498', fontSize: 11, interval: 6 },
+          axisLabel: { color: '#8fa8ca', fontSize: 11, interval: 6 },
         },
         yAxis: {
           type: 'value',
           name: meta.unit,
-          nameTextStyle: { color: '#8a94a6', padding: [0, 0, 0, -35] },
-          splitLine: { lineStyle: { color: '#eef1f5' } },
-          axisLabel: { color: '#7a8498', fontSize: 11 },
+          nameTextStyle: { color: '#8fa8ca', padding: [0, 0, 0, -35] },
+          splitLine: { lineStyle: { color: 'rgba(145, 181, 224, 0.12)' } },
+          axisLabel: { color: '#8fa8ca', fontSize: 11 },
         },
         series: [
           {
@@ -63,14 +64,14 @@ export function TrendChart({ points, metric }: TrendChartProps) {
             type: 'line',
             smooth: 0.22,
             symbol: 'none',
-            lineStyle: { width: 3, color: '#5978d4' },
-            areaStyle: { color: 'rgba(89, 120, 212, 0.08)' },
+            lineStyle: { width: 3, color: '#65d3ff', shadowColor: 'rgba(61, 194, 255, 0.42)', shadowBlur: 10 },
+            areaStyle: { color: 'rgba(65, 181, 255, 0.14)' },
             data,
             markLine: {
               silent: true,
               symbol: 'none',
-              label: { formatter: '本期开始', color: '#7a8498', fontSize: 11 },
-              lineStyle: { color: '#aab5c8', type: 'dashed' },
+              label: { formatter: '本期开始', color: '#9bb3d3', fontSize: 11 },
+              lineStyle: { color: 'rgba(154, 187, 225, 0.45)', type: 'dashed' },
               data: [{ xAxis: points[currentStart]?.date.slice(5) }],
             },
           },
