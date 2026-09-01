@@ -354,6 +354,8 @@ function AiDrawer({
 }
 
 export default function App() {
+  const appBase = import.meta.env.BASE_URL.replace(/\/$/, '')
+  const appPath = (path: string) => `${appBase}${path}` || '/'
   const [rows, setRows] = useState<StoreDataRow[]>([])
   const [selectedScenario, setSelectedScenario] = useState<string>(DEFAULT_SCENARIO)
   const [customFileName, setCustomFileName] = useState('')
@@ -371,9 +373,10 @@ export default function App() {
   const [aiSurface, setAiSurface] = useState<AiSurface>('overview')
   const [aiContext, setAiContext] = useState<AiContext | null>(null)
   const routeForPath = (path: string): 'overview' | 'diagnosis' | 'actions' | 'review' => {
-    if (path.startsWith('/diagnosis')) return 'diagnosis'
-    if (path.startsWith('/actions')) return 'actions'
-    if (path.startsWith('/review')) return 'review'
+    const relativePath = appBase && path.startsWith(appBase) ? path.slice(appBase.length) || '/' : path
+    if (relativePath.startsWith('/diagnosis')) return 'diagnosis'
+    if (relativePath.startsWith('/actions')) return 'actions'
+    if (relativePath.startsWith('/review')) return 'review'
     return 'overview'
   }
   const [route, setRoute] = useState<'overview' | 'diagnosis' | 'actions' | 'review'>(() => routeForPath(window.location.pathname))
@@ -386,7 +389,7 @@ export default function App() {
     setLoading(true)
     setLoadError('')
     try {
-      const response = await fetch(`/data/scenarios/${scenario.file}`)
+      const response = await fetch(`${import.meta.env.BASE_URL}data/scenarios/${scenario.file}`)
       if (!response.ok) throw new Error(`示例数据加载失败（${response.status}）`)
       const result = parseMerchantCsv(await response.text())
       if (result.blocked) throw new Error(result.issues[0]?.message ?? '示例数据校验失败')
@@ -516,7 +519,7 @@ export default function App() {
   }
 
   const navigate = (path: string) => {
-    window.history.pushState({}, '', path)
+    window.history.pushState({}, '', appPath(path))
     setRoute(routeForPath(path))
     window.scrollTo({ top: 0, behavior: 'instant' })
   }
@@ -649,7 +652,7 @@ export default function App() {
                 </optgroup>
               </select>
             </label>
-            <a className="button button-secondary" href="/data/csv-template.csv" download><Download size={15} />下载模板</a>
+            <a className="button button-secondary" href={`${import.meta.env.BASE_URL}data/csv-template.csv`} download><Download size={15} />下载模板</a>
             <button className="button button-primary" type="button" onClick={() => setDataAccessOpen(true)}><Upload size={15} />数据接入</button>
             <input className="sr-only" ref={fileInputRef} type="file" accept=".csv,text/csv" onChange={(event) => void handleImport(event)} />
             <button className="button button-secondary button-icon-text" type="button" onClick={() => void loadScenario(DEFAULT_SCENARIO)}><RotateCcw size={15} />重置</button>

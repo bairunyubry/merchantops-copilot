@@ -56,5 +56,8 @@ function localApi(env: Record<string, string>) {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  return { plugins: [react(), tailwindcss(), localApi(env)] }
+  return {
+    base: env.VITE_BASE_PATH || '/',
+    plugins: [react(), tailwindcss(), localApi(env)],
+  }
 })

@@ -36,14 +36,20 @@ interface StoredOnlineSource {
 export const ONLINE_SOURCE_STORAGE_KEY = 'merchantops.online-source.v1'
 export const ONLINE_SYNC_INTERVAL_MS = 30 * 60 * 1000
 const currentOrigin = () => typeof window === 'undefined' ? 'http://127.0.0.1:5173' : window.location.origin
+const clientEnv = (import.meta as ImportMeta & { env?: Record<string, string> }).env ?? {}
+const staticHosting = clientEnv.VITE_STATIC_HOSTING === 'true'
+const basePath = clientEnv.BASE_URL ?? '/'
 
 export function demoLiveUrl(origin = currentOrigin(), version = 1) {
+  if (staticHosting) return `${origin}${basePath}data/live/qingyou-live-v${version}-30d.csv`
   return `${origin}/api/demo-live.csv?version=${version}`
 }
 
 export function demoVersionFromUrl(value: string) {
   try {
     const url = new URL(value, currentOrigin())
+    const staticMatch = url.pathname.match(/\/data\/live\/qingyou-live-v([1-4])-30d\.csv$/)
+    if (staticMatch) return Number(staticMatch[1])
     if (url.pathname !== '/api/demo-live.csv') return null
     const version = Number(url.searchParams.get('version') ?? 1)
     return Number.isInteger(version) ? Math.min(4, Math.max(1, version)) : 1
@@ -54,6 +60,10 @@ export function demoVersionFromUrl(value: string) {
 
 export function withDemoVersion(value: string, version: number) {
   const url = new URL(value, currentOrigin())
+  if (/\/data\/live\/qingyou-live-v[1-4]-30d\.csv$/.test(url.pathname)) {
+    url.pathname = url.pathname.replace(/qingyou-live-v[1-4]-30d\.csv$/, `qingyou-live-v${Math.min(4, Math.max(1, version))}-30d.csv`)
+    return url.toString()
+  }
   url.searchParams.set('version', String(Math.min(4, Math.max(1, version))))
   return url.toString()
 }
@@ -107,6 +117,7 @@ export async function fetchOnlineCsv(value: string): Promise<OnlineCsvResult> {
     }
   } else {
     if (url.protocol !== 'https:') throw new Error('外部数据源仅支持 HTTPS 公开链接。')
+    if (staticHosting) throw new Error('GitHub Pages 演示版不提供跨域代理，请使用允许浏览器跨域访问的公开 CSV，或下载后通过本地 CSV 导入。')
     const response = await fetch('/api/csv-proxy', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },

@@ -2,7 +2,7 @@
 
 面向内容电商新手商家的经营诊断产品，把离线经营数据转化为“发现问题—解释证据—采取行动—复盘结果”的经营闭环。
 
-**在线体验：** [https://merchantops-copilot-1u94tqtc.edgeone.cool](https://merchantops-copilot-1u94tqtc.edgeone.cool)
+**在线体验：** [https://bairunyubry.github.io/merchantops-copilot/](https://bairunyubry.github.io/merchantops-copilot/)
 
 ## 当前阶段
 
@@ -15,6 +15,7 @@
 - [x] 本地 CSV 与公开在线 CSV 数据接入
 - [x] AI 经营问答、行动预填与规则降级
 - [x] 腾讯云 EdgeOne 国内生产部署
+- [x] GitHub Pages 静态演示部署
 - [ ] 求职材料与演示脚本
 
 ## 本地运行
@@ -34,6 +35,8 @@ DEMO_ACCESS_CODE=分享给体验者的演示口令
 ```
 
 未输入演示口令或 DeepSeek 不可用时，页面自动展示同结构的规则建议，不中断诊断、建单和复盘流程。运行 `pnpm test` 与 `pnpm build` 可执行完整验收。
+
+GitHub Pages 版本用于长期公开展示，可运行示例数据、CSV 本地导入、规则诊断、行动工单和周度复盘。由于 GitHub Pages 仅托管静态文件，不能安全保存 DeepSeek Key 或运行服务端代理，因此该版本的 AI 使用规则降级；真实 DeepSeek 能力需要搭配独立的服务端函数。
 
 ## EdgeOne 生产部署
 

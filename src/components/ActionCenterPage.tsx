@@ -268,7 +268,7 @@ export function ActionCenterPage({
     if (order.source === 'ai') clearAiActionDraft()
     setCreateOpen(false)
     setSelectedId(order.id)
-    window.history.replaceState({}, '', '/actions')
+    window.history.replaceState({}, '', `${import.meta.env.BASE_URL}actions`)
   }
 
   const updateOrder = (id: string, updater: (order: ActionWorkOrder) => ActionWorkOrder) => {
