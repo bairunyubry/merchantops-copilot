@@ -10,4 +10,3 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
   res.setHeader('Location', `/data/live/qingyou-live-v${version}-30d.csv`)
   res.end()
 }
-

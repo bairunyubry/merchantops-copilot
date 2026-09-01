@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { ZodError } from 'zod'
-import { AdviceFailure, generateAdvice, safeFallback } from '../server/advice'
+import { AdviceFailure, generateAdvice, safeFallback } from './advice'
 import { adviceRequestSchema } from '../src/lib/ai'
 
 type ApiRequest = IncomingMessage & { body?: unknown }
@@ -73,4 +73,3 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
     send(res, 200, safeFallback(parsed.data, reason))
   }
 }
-

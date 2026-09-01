@@ -2,7 +2,7 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { fetchPublicCsv, PublicCsvError } from './server/csvProxy.ts'
-import adviceHandler from './api/advice.ts'
+import adviceHandler from './server/apiHandler.ts'
 
 function localApi(env: Record<string, string>) {
   return {

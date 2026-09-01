@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import handler from './advice'
+import handler from '../server/apiHandler'
 import { adviceRequestFixture } from '../server/advice.fixture'
 
 function responseRecorder() {

@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node scripts/build-api.mjs && tsc -b && vite build",
     "data:generate": "node scripts/generate-sample-data.mjs",
     "preview": "vite preview",
     "test": "vitest run",

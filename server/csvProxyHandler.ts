@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { fetchPublicCsv, PublicCsvError } from '../server/csvProxy'
+import { fetchPublicCsv, PublicCsvError } from './csvProxy'
 
 type ApiRequest = IncomingMessage & { body?: unknown }
 
@@ -34,4 +34,3 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
     res.end(JSON.stringify({ error: error instanceof Error ? error.message : '读取在线 CSV 失败。' }))
   }
 }
-
