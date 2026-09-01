@@ -19,7 +19,6 @@
 - [x] 腾讯云 EdgeOne 国内生产部署
 - [x] GitHub Pages 静态演示部署
 - [x] CloudBase 国内前端、HTTP 云函数与 AI 服务部署
-- [ ] 求职材料与演示脚本
 
 ## 本地运行
 
