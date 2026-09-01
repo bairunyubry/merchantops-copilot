@@ -2,7 +2,7 @@
 
 面向内容电商新手商家的经营诊断产品，把离线经营数据转化为“发现问题—解释证据—采取行动—复盘结果”的经营闭环。
 
-**国内在线体验：** [CloudBase 正式演示地址](https://barunyubry-d2g0c7kk2469a0a77-1479112522.ap-shanghai.app.tcloudbase.com/)
+**国内在线体验：** [CloudBase 正式演示地址](https://barunyubry-d2g0c7kk2469a0a77-1479112522.ap-shanghai.app.tcloudbase.com/)AI演示口令：shangjiajingyingluopan
 
 **备用地址：** [GitHub Pages 静态规则版](https://bairunyubry.github.io/merchantops-copilot/)
 
