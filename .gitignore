@@ -15,3 +15,5 @@ tmp/
 Thumbs.db
 .vercel
 .edgeone/
+.env
+.tef_dist/
