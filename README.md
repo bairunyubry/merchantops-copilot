@@ -2,6 +2,8 @@
 
 面向内容电商新手商家的经营诊断产品，把离线经营数据转化为“发现问题—解释证据—采取行动—复盘结果”的经营闭环。
 
+**在线体验：** [https://merchantops-copilot-1u94tqtc.edgeone.cool](https://merchantops-copilot-1u94tqtc.edgeone.cool)
+
 ## 当前阶段
 
 - [x] 项目 Brief 与精简 PRD 评审通过
@@ -12,7 +14,8 @@
 - [x] 行动工单、指标监控与周度复盘
 - [x] 本地 CSV 与公开在线 CSV 数据接入
 - [x] AI 经营问答、行动预填与规则降级
-- [ ] Vercel 部署与求职材料
+- [x] 腾讯云 EdgeOne 国内生产部署
+- [ ] 求职材料与演示脚本
 
 ## 本地运行
 
@@ -21,7 +24,7 @@ pnpm install
 pnpm dev
 ```
 
-AI 接口通过 Vite 本地中间件和 Vercel Serverless Function 提供。复制 `.env.example` 为 `.env.local`，并仅在服务端配置：
+AI 接口通过 Vite 本地中间件和 EdgeOne 云函数提供，并保留 Vercel Serverless Function 兼容实现。复制 `.env.example` 为 `.env.local`，并仅在服务端配置：
 
 ```text
 DEEPSEEK_API_KEY=你的服务端密钥
@@ -31,6 +34,17 @@ DEMO_ACCESS_CODE=分享给体验者的演示口令
 ```
 
 未输入演示口令或 DeepSeek 不可用时，页面自动展示同结构的规则建议，不中断诊断、建单和复盘流程。运行 `pnpm test` 与 `pnpm build` 可执行完整验收。
+
+## EdgeOne 生产部署
+
+生产环境使用腾讯云 EdgeOne Pages，通过官方 CLI 发布：
+
+```bash
+edgeone login --site china
+edgeone makers deploy -n merchantops-copilot -e production --area global
+```
+
+在 EdgeOne 控制台的生产环境中配置 `DEEPSEEK_API_KEY`、`DEEPSEEK_BASE_URL`、`DEEPSEEK_MODEL` 和 `DEMO_ACCESS_CODE`，配置后重新执行生产部署。变量值只保存在服务端，不应提交到 Git。
 
 ## 数据与隐私边界
 
