@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/build-api.mjs && tsc -b && vite build",
+    "build": "node scripts/build-api.mjs && tsc -b && vite build && node scripts/add-spa-fallbacks.mjs",
     "data:generate": "node scripts/generate-sample-data.mjs",
     "preview": "vite preview",
     "test": "vitest run",
@@ -28,6 +28,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@cloudbase/cli": "^3.8.1",
     "@types/node": "26.4.0",
     "@types/papaparse": "5.5.2",
     "@types/react": "19.2.18",

@@ -1,0 +1,6 @@
+{
+  "name": "merchantops-api-cloudbase",
+  "private": true,
+  "type": "commonjs",
+  "main": "index.js"
+}

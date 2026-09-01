@@ -25,3 +25,24 @@ await build({
     },
   },
 })
+
+await build({
+  configFile: false,
+  publicDir: false,
+  ssr: {
+    noExternal: ['zod'],
+  },
+  build: {
+    ssr: true,
+    outDir: resolve('cloudbase/functions/merchantops-api'),
+    emptyOutDir: false,
+    minify: false,
+    rollupOptions: {
+      input: resolve('server/cloudbaseHttpServer.ts'),
+      output: {
+        entryFileNames: 'server.js',
+        format: 'cjs',
+      },
+    },
+  },
+})

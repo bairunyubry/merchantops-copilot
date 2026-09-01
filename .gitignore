@@ -17,3 +17,7 @@ Thumbs.db
 .edgeone/
 .env
 .tef_dist/
+.cloudbase/
+.tcb/
+.pnpm-store/
+cloudbase/functions/merchantops-api/server.js

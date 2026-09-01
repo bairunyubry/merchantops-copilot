@@ -1,0 +1,48 @@
+{
+  "$schema": "https://static.cloudbase.net/cli/cloudbaserc.schema.json",
+  "version": "2.1",
+  "envId": "barunyubry-d2g0c7kk2469a0a77",
+  "region": "ap-shanghai",
+  "functionRoot": "./cloudbase/functions",
+  "functions": [
+    {
+      "name": "merchantops-api",
+      "description": "商家经营罗盘 AI 建议与公开 CSV 代理",
+      "type": "HTTP",
+      "runtime": "Nodejs20.19",
+      "entry": "server.js",
+      "dir": "./cloudbase/functions/merchantops-api",
+      "buildStrategy": "zip",
+      "timeout": 30,
+      "memorySize": 256,
+      "installDependency": false,
+      "public": false
+    }
+  ],
+  "hosting": [
+    {
+      "name": "merchantops-web",
+      "root": ".",
+      "framework": "vite-react",
+      "installCommand": "",
+      "buildCommand": "pnpm run build",
+      "outputDir": "dist",
+      "deployPath": "/"
+    }
+  ],
+  "gateway": {
+    "routes": [
+      {
+        "path": "/api",
+        "target": "function:merchantops-api",
+        "enablePathTransmission": true,
+        "enableAuth": false
+      },
+      {
+        "path": "/",
+        "target": "hosting:merchantops-web",
+        "enableAuth": false
+      }
+    ]
+  }
+}

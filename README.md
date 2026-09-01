@@ -2,7 +2,9 @@
 
 面向内容电商新手商家的经营诊断产品，把离线经营数据转化为“发现问题—解释证据—采取行动—复盘结果”的经营闭环。
 
-**在线体验：** [https://bairunyubry.github.io/merchantops-copilot/](https://bairunyubry.github.io/merchantops-copilot/)
+**国内在线体验：** [CloudBase 正式演示地址](https://barunyubry-d2g0c7kk2469a0a77-1479112522.ap-shanghai.app.tcloudbase.com/)
+
+**备用地址：** [GitHub Pages 静态规则版](https://bairunyubry.github.io/merchantops-copilot/)
 
 ## 当前阶段
 
@@ -16,6 +18,7 @@
 - [x] AI 经营问答、行动预填与规则降级
 - [x] 腾讯云 EdgeOne 国内生产部署
 - [x] GitHub Pages 静态演示部署
+- [x] CloudBase 国内前端、HTTP 云函数与 AI 服务部署
 - [ ] 求职材料与演示脚本
 
 ## 本地运行
@@ -25,7 +28,7 @@ pnpm install
 pnpm dev
 ```
 
-AI 接口通过 Vite 本地中间件和 EdgeOne 云函数提供，并保留 Vercel Serverless Function 兼容实现。复制 `.env.example` 为 `.env.local`，并仅在服务端配置：
+AI 接口通过 Vite 本地中间件和 CloudBase HTTP 云函数提供，并保留 EdgeOne 与 Vercel 兼容实现。复制 `.env.example` 为 `.env.local`，并仅在服务端配置：
 
 ```text
 DEEPSEEK_API_KEY=你的服务端密钥
@@ -37,6 +40,19 @@ DEMO_ACCESS_CODE=分享给体验者的演示口令
 未输入演示口令或 DeepSeek 不可用时，页面自动展示同结构的规则建议，不中断诊断、建单和复盘流程。运行 `pnpm test` 与 `pnpm build` 可执行完整验收。
 
 GitHub Pages 版本用于长期公开展示，可运行示例数据、CSV 本地导入、规则诊断、行动工单和周度复盘。由于 GitHub Pages 仅托管静态文件，不能安全保存 DeepSeek Key 或运行服务端代理，因此该版本的 AI 使用规则降级；真实 DeepSeek 能力需要搭配独立的服务端函数。
+
+## CloudBase 国内部署
+
+国内主站使用 CloudBase 静态托管、HTTP 云函数和统一网关。配置见 `cloudbaserc.json`，发布前先执行预检：
+
+```bash
+tcb login --flow device
+tcb validate
+tcb deploy --dry-run
+tcb deploy
+```
+
+网关将 `/api` 转发至 `merchantops-api`，其余路径交给静态托管。DeepSeek Key 与演示口令只配置在云函数环境变量中，不进入 Git 仓库或前端产物。
 
 ## EdgeOne 生产部署
 

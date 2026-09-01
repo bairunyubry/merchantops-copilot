@@ -39,6 +39,9 @@ importers:
         specifier: 4.4.3
         version: 4.4.3
     devDependencies:
+      '@cloudbase/cli':
+        specifier: ^3.8.1
+        version: 3.8.1
       '@types/node':
         specifier: 26.4.0
         version: 26.4.0
@@ -89,6 +92,10 @@ packages:
   '@bcoe/v8-coverage@1.0.2':
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
+
+  '@cloudbase/cli@3.8.1':
+    resolution: {integrity: sha512-UTazVglGgMSqhsIk7MlbwRuSX/43vG83Ps598RIN5p/bF8I48pXlRlPQGj1m0PbE5VZFZS4I+tEudEr1MMt3Fw==}
+    hasBin: true
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -991,6 +998,8 @@ snapshots:
       '@babel/helper-validator-identifier': 7.29.7
 
   '@bcoe/v8-coverage@1.0.2': {}
+
+  '@cloudbase/cli@3.8.1': {}
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
