@@ -209,6 +209,20 @@ type AiChatMessage =
   | { id: string; role: 'user'; text: string }
   | { id: string; role: 'assistant'; response: AdviceResponse }
 
+const fallbackReasonLabels: Record<string, string> = {
+  upstream_timeout: '模型响应超时，已展示规则建议；请稍后重试。',
+  upstream_network: '云函数暂时无法连接模型，已展示规则建议。',
+  insufficient_balance: '模型账户余额不足，已展示规则建议。',
+  upstream_error: '模型服务返回错误，已展示规则建议；请稍后重试。',
+  invalid_upstream_response: '模型响应结构异常，已展示规则建议。',
+  empty_content: '模型本次未返回内容，已展示规则建议。',
+  invalid_json: '模型输出不是完整 JSON，已展示规则建议；请重试。',
+  invalid_schema: '模型输出未通过经营建议结构校验，已展示规则建议；请重试。',
+  output_truncated: '模型回答过长被截断，已展示规则建议；请缩小问题范围后重试。',
+  api_key_missing: '服务端尚未配置模型密钥，已展示规则建议。',
+  unexpected_error: 'AI 服务发生未知错误，已展示规则建议。',
+}
+
 function AdviceMessageCard({
   answer,
   findings,
@@ -286,7 +300,10 @@ function AiDrawer({
     try {
       const response = await requestAdvice({ ...safeRequest, accessCode: accessCode.trim() })
       setMessages((current) => [...current, { id: `assistant-${Date.now()}`, role: 'assistant' as const, response }].slice(-12))
-      if (response.mode === 'rule_fallback') setRequestError('本次模型调用未返回可用结果，已保留对话并展示规则建议；你可以继续追问。')
+      if (response.mode === 'rule_fallback') {
+        const reason = response.meta.fallbackReason ?? 'unexpected_error'
+        setRequestError(fallbackReasonLabels[reason] ?? `模型调用未返回可用结果（${reason}），已展示规则建议。`)
+      }
     } catch (error) {
       const fallback = buildRuleFallback(safeRequest, 'client_request_error')
       setMessages((current) => [...current, { id: `assistant-${Date.now()}`, role: 'assistant' as const, response: fallback }].slice(-12))

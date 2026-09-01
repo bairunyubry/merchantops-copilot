@@ -40,6 +40,11 @@ describe('DeepSeek advice service', () => {
     await expect(generateAdvice(adviceRequestFixture, { apiKey: 'key', fetchImpl })).rejects.toMatchObject({ reason: 'upstream_timeout' })
   })
 
+  it('识别因 token 限制而被截断的模型输出', async () => {
+    const fetchImpl = vi.fn(async () => responseWith({ choices: [{ message: { content: '{"answer":"未完成"' }, finish_reason: 'length' }] })) as unknown as typeof fetch
+    await expect(generateAdvice(adviceRequestFixture, { apiKey: 'key', fetchImpl })).rejects.toMatchObject({ reason: 'output_truncated' })
+  })
+
   it('删除模型编造的 findingId，并用规则建议补齐行动', async () => {
     const invalid = { ...content, priorityActions: [{ ...content.priorityActions[0], findingId: 'invented' }] }
     const fetchImpl = vi.fn(async () => responseWith({ choices: [{ message: { content: JSON.stringify(invalid) } }] })) as typeof fetch

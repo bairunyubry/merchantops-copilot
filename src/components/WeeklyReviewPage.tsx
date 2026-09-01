@@ -137,9 +137,9 @@ export function WeeklyReviewPage({
       </section>
 
       <section className="weekly-summary-card">
-        <div className="weekly-ai-tag"><Sparkles size={13} />规则摘要 · AI 降级态</div>
+        <div className="weekly-ai-tag"><Sparkles size={13} />规则事实底稿 · 可调用 AI 解读</div>
         <h2>{review.fallbackSummary}</h2>
-        <p>所有数字和状态来自规则层；接入 DeepSeek 后，只补充解释、干扰因素和下周行动表达。</p>
+        <p>所有数字和状态来自规则层；点击“AI 解读本期”，由 DeepSeek 补充解释、干扰因素和下周行动表达。</p>
       </section>
 
       <section className="weekly-section">

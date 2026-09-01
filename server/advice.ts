@@ -30,7 +30,9 @@ export const SYSTEM_PROMPT = `你是“商家经营罗盘”的经营分析助�
   "hypotheses": [{ "statement": "待验证假设", "verification": "验证方法" }],
   "priorityActions": [{ "findingId": "已有 findingId", "action": "行动", "reason": "数据依据", "verification": "效果验证方法" }],
   "caveats": ["不确定性、数据限制或归因限制"]
-}`
+}
+
+为避免回答被截断：answer 控制在 300 字内；evidence 最多 4 条；hypotheses 最多 2 条；priorityActions 最多 3 条；caveats 最多 3 条。每个字段只写结论所需的最短完整表达。`
 
 const upstreamSchema = z.object({
   choices: z.array(z.object({
@@ -90,7 +92,7 @@ export async function generateAdvice(requestValue: unknown, options?: {
   const model = options?.model ?? 'deepseek-v4-flash'
   const fetchImpl = options?.fetchImpl ?? fetch
   const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), options?.timeoutMs ?? 12_000)
+  const timer = setTimeout(() => controller.abort(), options?.timeoutMs ?? 24_000)
   let response: Response
   try {
     response = await fetchImpl(`${baseUrl}/chat/completions`, {
@@ -108,7 +110,7 @@ export async function generateAdvice(requestValue: unknown, options?: {
         ],
         response_format: { type: 'json_object' },
         thinking: { type: 'disabled' },
-        max_tokens: 1200,
+        max_tokens: 2000,
         stream: false,
       }),
       signal: controller.signal,
@@ -127,7 +129,9 @@ export async function generateAdvice(requestValue: unknown, options?: {
   } catch {
     throw new AdviceFailure('invalid_upstream_response', 'DeepSeek 响应结构不合法。')
   }
-  const text = upstream.choices[0]?.message.content?.trim()
+  const choice = upstream.choices[0]
+  if (choice?.finish_reason === 'length') throw new AdviceFailure('output_truncated', 'DeepSeek 输出因长度限制被截断。')
+  const text = choice?.message.content?.trim()
   if (!text) throw new AdviceFailure('empty_content', 'DeepSeek 返回空内容。')
   let content: z.infer<typeof adviceContentSchema>
   try {
